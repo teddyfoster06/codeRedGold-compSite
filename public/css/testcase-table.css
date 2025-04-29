@@ -1,0 +1,96 @@
+#testCases {
+    max-width: 100%;
+    width: 100%;
+    border-collapse: collapse;
+
+    font-family: Arial, sans-serif;
+    table-layout: fixed;
+
+  }
+  .problems-list{
+    max-width: 100%;
+    width: 100%;
+    border-collapse: collapse;
+
+    font-family: Arial, sans-serif;
+    table-layout: fixed;
+  }
+  .problems-list tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  .problem-list-entry{
+    overflow-x: scroll;  
+    white-space: nowrap;  
+  }
+  .problems-list th,
+  .problems-list td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    text-align: center;
+    
+     
+  }
+  .problems-list th {
+    background-color: #f4f4f4;
+  }
+
+  tbody{
+    width: 100%;
+  }
+  thead{
+    width: 100%;
+
+  }
+  #testcases-tab{
+    width:100%;
+  }
+  #testCases th,
+  #testCases td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    text-align: center;
+    white-space: normal;         /* allows wrapping */
+  word-break: normal;          /* don't break in the middle of words */
+  overflow-wrap: break-word;
+  }
+  .thin-column{
+    width: 12.5%;
+  }
+  .med-column{
+    width: 22.5%;
+  }
+  .large-column{
+    width: 30%;
+  }
+  
+  /* Shorter header row */
+  #testCases th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    height: 30px; /* smaller height */
+    font-size: 0.9em;
+    padding: 4px 8px; /* tighter padding */
+  }
+  
+  /* Taller body rows */
+  #testCases td {
+    height: 50px; /* taller for visibility */
+    font-size: 1em;
+  }
+  
+  #testCases tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .status span {
+    font-size: 1.5em;
+  }
+  
+  .check {
+    color: green;
+  }
+  
+  .x {
+    color: red;
+  }
+  

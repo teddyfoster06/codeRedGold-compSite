@@ -1,0 +1,37 @@
+[
+    {
+       "problem-title":  "Tropical Storm Haverford",
+       "boilerplate-python": "def numberOfCitiesHit(regions, n):\n\t#Write Python Here",
+       "boilerplate-java": "class Main{public static int numberOfCitiesHit(char[][] regions, int n){\n\t//Write Java Here\n}}",
+       "method-name": "numberOfCitiesHit",
+       "problem-value": 20,
+       "has-customPrinterFunction": true,
+       "customPrinterFunctions": {
+        "name":"printerFunction",
+        "python":"def printerFunction(n):\n\tprint(n)",
+        "java":"public static void printerFunction(int n){System.out.println(n)}"
+       },
+       "problem-description": "There is a large tropical storm headed across the United States. Figure out which cities will get hit by the storm on its way across the country. Your program will be given an n by n character array of regions, each containing either an “L” or an “H”, representing low pressure or high pressure. If the region contains an “H”, the storm will not be able to enter that region. However, if the region contains an “L”, the storm will be able to pass through the region. One region will also contain an “S”, denoting the current position of the storm, and another will contain an ‘F’, denoting the final position that the hurricane will reach. Calculate and return the number of regions that get hit by the tropical storm, including the starting and finishing region. The storm can only move to an adjacent region and is unable to move diagonally. The start and finish may be at any point on the map.",
+       "inputs":[
+            {
+                "python": "n",
+                "java": "int n"
+            },
+            {
+                "python": "regions",
+                "java": "char[][] regions"
+            }
+       ],
+       "testcases":[
+        {
+            "public": true,
+            "regions": "{{'S', 'L', 'L', 'L', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'H', 'H', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'L', 'L', 'L', 'H', 'H', 'H', 'L', 'H', 'H'},{'H', 'L', 'H', 'L', 'L', 'L', 'H', 'L', 'L', 'H'},{'H', 'H', 'H', 'H', 'H', 'L', 'H', 'H', 'H', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'H', 'H', 'L', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'F', 'H', 'H'}}",
+            "n": "10",
+            "output": "27"
+        },
+        {
+            "public": false
+        }
+       ]
+    }
+]

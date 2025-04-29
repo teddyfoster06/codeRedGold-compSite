@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Problem Submission</title>
+
+    <!-- Ace Editor CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.css">
+
+      <!-- Mode scripts for Java, Python, and C++ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-java.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-python.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-c_cpp.js"></script>
+
+    <link rel="stylesheet" href="/css/problem.css">
+    <link rel="stylesheet" href="/css/problem-left.css">
+    <link rel="stylesheet" href="/css/testcase-table.css">
+    <link rel="icon" href="/assets/favicon/favicon.ico"/>
+
+</head>
+<body class="bod">
+    <div id="top">
+        <h1 id="clock">00:00:00</h1>
+    </div>
+    <div id="bottom">
+        <div id="bottom-left">
+          <div class="window">
+            <div class="tabs">
+              <button class="tab-button active" onclick="openTab(event, 'description')">Problem Description</button>
+              <button class="tab-button" onclick="openTab(event, 'selection')">Problem Selection</button>
+              <button class="tab-button" onclick="openTab(event, 'testcases-tab')">Test Cases</button>
+            </div>
+        
+            <div class="tab-content" id="description">
+              <h1>#1- Loading... ● 0 pts</h1>
+              Description loading
+            </div>
+            
+            <div class="tab-content" id="selection" style="display: none;">
+              
+              <table id="problems-list"class="problems-list">
+                <thead>
+                  <tr>
+                    <th class="">Problems</th>
+                  </tr>
+                </thead>
+                <tbody id="list-body">
+                  <tr>
+                    <td>
+                      <div class="problem-list-entry">
+                      Money ddddddddddddddddddddddddddd ssssssssssssssssssssssss aaaaaa
+                    </div>
+                  </td>
+                  </tr>
+                  <tr>
+                    <td>Money2</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="tab-content" id="testcases-tab" style="display: none;">
+              <div class="run-buttons">
+                <button id="testButton" class="button test-button">
+                  Test
+                </button>
+                <button id="submitButton" class="button submit-button">
+                  Submit
+                </button>
+                <div class="button-loading-div">
+                  Testing...
+                </div>
+              </div>
+              <table id="testCases">
+                <thead>
+                  <tr>
+                    <th class="thin-column">Test Case #</th>
+                    <th class="large-column">Input Data</th>
+                    <th class="med-column">Expected Output</th>
+                    <th class="med-column">Your Output</th>
+                    <th class="thin-column">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="table-body">
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+            
+              
+        </div>
+        <div id="bottom-right">
+            <div id="editor-container">
+              <div class="editor-wrapper">
+                <div id="python-editor"></div>
+                <div id="java-editor"></div>
+                <div class="loading-div" id="editor-loading">
+                  <div class="loading-spinner">
+                  </div>
+                </div>
+              </div>
+                
+                <div id="language-select">
+                    <select id="languages" name="languages">
+                      <option value="java">Java</option>
+                      <option value="python">Python</option>
+                    </select> 
+                </div>
+                <button id="save-button">
+                  Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+    
+    
+
+
+    <script src="/js/problem.js"></script>
+</body>
+</html>

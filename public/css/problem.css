@@ -1,0 +1,149 @@
+#java-editor, #python-editor { 
+    height: 100%; 
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left:0;
+}
+#python-editor{
+    z-index: 1;
+}
+#java-editor{
+    z-index: 3;
+}
+#language-select{
+    z-index: 4;
+}
+.problem-list-entry{
+    cursor: pointer;
+}
+.editor-wrapper{
+    height: 80vh; 
+    width: 45vw;
+    position: relative;
+    top: 0;
+    left:0;
+}
+.editor-cover{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left:0;
+    background-color: white;
+    z-index: 2;
+}
+.loading-div{
+    position: absolute;
+    top:0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 999;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+.loading-spinner{
+    width: 10vw;
+    height: 10vw;
+    border-radius: 100%;
+    border: 10px solid black;
+    border-top-color:  transparent;
+    animation: spin 1s linear infinite;
+}  
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+#editor-container{
+    position: relative;
+}
+#language-select{
+    position: absolute;
+    right: 1vw;
+    top: 1vh;
+}
+#save-button{
+    position: absolute;
+    bottom: 10vh;
+    right: 1vw;
+    z-index: 4;
+}
+#top{
+    height: 15vh;
+    width: 100vw;
+    text-align: center;
+}
+#bottom{
+    height: 85vh;
+    width: 100vw;
+    display: flex;
+}
+#bottom-left, #bottom-right{
+    height: 100%;
+    width:50%;
+    display:flex;
+    justify-content: center;
+}
+#spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Ensure padding and border don't affect height/width */
+  }
+
+.run-buttons{
+    width: 100%;
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    
+    align-items: center;
+    padding: 15px;
+}
+
+  .button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s;
+  }
+
+  /* Specific button colors */
+  .test-button {
+    background-color: #4CAF50; /* Green */
+  }
+
+  .submit-button {
+    background-color: #2196F3; /* Blue */
+  }
+  .button-loading-div{
+    background-color: rgba(167, 167, 167, 0.8);
+    position: absolute;
+    display: none;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    font-size: larger;
+}
+
