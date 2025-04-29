@@ -58,6 +58,7 @@ app.get('/log', (req, res) => {
 })
 
 app.post('/register-runner', (req, res) => {
+    console.log("New Change");
     console.log("Request recieved");
     let ip = req.ip;
     if(ip.startsWith('::ffff:')){
