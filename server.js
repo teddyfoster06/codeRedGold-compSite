@@ -12,29 +12,84 @@ wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         const requestJSON = JSON.parse(message);
         //1. Find an open container
-        let index = -1;
-        for(let j = 0; j < activeRunners.length; j++){
-            console.log("Testing " + activeRunners[j]);
-            if(activeRunners[j] === true){
-                checkIfOpen(j, requestJSON['problem-number'])
-                .then(index => {
-                    console.log("Logging Relevant Objects:");
-                    console.log(sockets[index]);
-                    runDataObjects[index]['code'] = formatCode(requestJSON['code'], requestJSON['problemNumber'], requestJSON['language']);
-                    sockets[index].onopen = () => {
-                        
-                        sockets[index].send(runDataObjects[index]['code']);
+        const teamsJSON = JSON.parse(fs.readFileSync(teamsPath, 'utf8'));
 
-                    };
-                    sockets[index].onmessage = (event) => {
-                        runDataObjects[index]['current-text'] += event.data;
-                        console.log(event.data);
+        for(let i = 0; i < teamsJSON.length; i++){
+            if(requestJSON['username'] == teamsJSON[i]['username']){
+                if(requestJSON['password'] == teamsJSON[i]['password']){
+                    for(let j = 0; j < activeRunners.length; j++){
+                        console.log("Testing " + activeRunners[j]);
+                        if(activeRunners[j] === true){
+                            checkIfOpen(j, requestJSON['problemNumber'])
+                            .then(index => {
+                                console.log("Logging Relevant Objects:");
+                                console.log(sockets[index]);
+                                runDataObjects[index]['code'] = formatCode(requestJSON['code'], requestJSON['problemNumber'], requestJSON['language']);
+                                sockets[index].onopen = () => {
+                                    
+                                    sockets[index].send(runDataObjects[index]['code']);
+
+                                };
+                                sockets[index].onmessage = (event) => {
+                                    if(event.data != "Join Success"){
+                                        runDataObjects[index]['current-text'] += event.data;
+                                    }
+                                    
+                                    console.log(event.data);
+                                }
+                                sockets[index].onclose = () => {
+                                    console.log(runDataObjects[index]['current-text']);
+
+                                    let outputs = runDataObjects[index]['current-text'].split("$$$");
+                                    console.log("Prob number:" + JSON.stringify(runDataObjects[index]));
+                                    const testcaseData = problemsJSON[runDataObjects[index]['problem-number']-1]['testcases'];
+                                    
+                                    const teamDataJSON = JSON.parse(fs.readFileSync(teamDataPath, 'utf8'));
+
+                                    usernameIndex = -1;
+                    
+                                    for(let i = 0; i < teamDataJSON.length; i++){
+                                        console.log("Comparing " + teamDataJSON[i]['username'] + " and " + requestJSON['username'].toLowerCase());
+                                        if(teamDataJSON[i]['username'] == requestJSON['username'].toLowerCase()){
+                                            usernameIndex = i;
+                                            break;
+                                        }
+
+                                    }
+                                    console.log(usernameIndex)
+                                    
+                                    outputs = outputs.filter(str => str !== '');
+                                    console.log(outputs);
+                                    for(let i = 0; i < outputs.length && i < testcaseData.length; i++){
+                                        teamDataJSON[usernameIndex]['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['your-output'] = outputs[i];
+                                        if(outputs[i] == testcaseData[i]['output']){
+                                            teamDataJSON[usernameIndex]['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['status'] = 'check';
+                                        }else{
+                                            teamDataJSON[usernameIndex]['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['status'] = 'cross';
+                                        }
+                                    }
+                                    console.log("Tried to write the file");
+                                    fs.writeFileSync(teamDataPath, JSON.stringify(teamDataJSON, null, 2), 'utf8');
+                                    console.log(teamDataJSON[usernameIndex]['problems']);
+
+
+
+
+
+                                }
+                            });
+                        }
                     }
-                });
+
+                }else{
+                    ws.close(1008, "Bad Password");
+                }
+            }else{
+                ws.close(1008, "Bad Username");
             }
         }
-        console.log("run data object");
-        console.log(runDataObjects[index]);
+
+        
 
         //2.Create Code
         
@@ -397,11 +452,12 @@ async function checkIfOpen(i, problemNumber){
                 if(activeRunners[i] === true){
                     activeRunners[i] = false;
                     sockets.push(new WebSocket('ws://'+runnersJSON[i]['ip']+':3080'))
+                    console.log("Checking if open: " + problemNumber)
                     runDataObjects.push({
                         "runner-number": i,
                         "current-text": "",
                         "code": "",
-                        "problem-number": problemNumber,
+                        "problem-number": parseInt(problemNumber),
                         "ip": runnersJSON[i]          
                     })
                     return sockets.length-1

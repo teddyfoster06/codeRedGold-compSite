@@ -136,7 +136,7 @@
             "public": true,
             "input": "n=10\nregions={{'S', 'L', 'L', 'L', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'H', 'H', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'L', 'L', 'L', 'H', 'H', 'H', 'L', 'H', 'H'},{'H', 'L', 'H', 'L', 'L', 'L', 'H', 'L', 'L', 'H'},{'H', 'H', 'H', 'H', 'H', 'L', 'H', 'H', 'H', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'H', 'H', 'L', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'F', 'H', 'H'}}",
             "expected-output": "27",
-            "your-output": "",
+            "your-output": "10\n",
             "status": "cross"
           },
           {

@@ -290,7 +290,9 @@ function testCode(code, language, problemNumber){
   const testObject = {
     'code': code,
     'language': language,
-    'problemNumber':problemNumber
+    'problemNumber':problemNumber,
+    'username': cookies[0],
+    'password': cookies[1]
   }
   //Set up websocket and send data
   const socket = new WebSocket('ws://localhost:3001');
