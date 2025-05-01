@@ -16,7 +16,21 @@ wss.on('connection', (ws) => {
         for(let j = 0; j < activeRunners.length; j++){
             console.log("Testing " + activeRunners[j]);
             if(activeRunners[j] === true){
-                index = checkIfOpen(j, requestJSON['problem-number']);
+                checkIfOpen(j, requestJSON['problem-number'])
+                .then(index => {
+                    console.log("Logging Relevant Objects:");
+                    console.log(sockets[index]);
+                    runDataObjects[index]['code'] = formatCode(requestJSON['code'], requestJSON['problemNumber'], requestJSON['language']);
+                    sockets[index].onopen = () => {
+                        
+                        sockets[index].send(runDataObjects[index]['code']);
+
+                    };
+                    sockets[index].onmessage = (event) => {
+                        runDataObjects[index]['current-text'] += event.data;
+                        console.log(event.data);
+                    }
+                });
             }
         }
         console.log("run data object");
@@ -24,8 +38,7 @@ wss.on('connection', (ws) => {
 
         //2.Create Code
         
-        const code = formatCode(requestJSON['code'], requestJSON['problemNumber'], requestJSON['language']);
-        console.log(code);
+        
         //3. Send Code
         
         //4. On response, compare output to testcases
@@ -57,8 +70,7 @@ app.get('/log', (req, res) => {
     res.status(200).json({});
 })
 
-app.post('/register-runner', (req, res) => {
-    console.log("New Change");
+app.get('/register-runner', (req, res) => {
     console.log("Request recieved");
     let ip = req.ip;
     if(ip.startsWith('::ffff:')){
@@ -66,14 +78,15 @@ app.post('/register-runner', (req, res) => {
     }
     let runnersJSON = JSON.parse(fs.readFileSync(registeredRunnersPath, 'utf8'));
     for(let i = 0; i < runnersJSON.length; i++){
-        if(runnersJSON[i] === ip){
+        if(runnersJSON[i]['ip'] === ip){
+            console.log("Failure!")
             res.status(401).json({success: false, message: "ip already registered"});
             return;
         }
     }
     runnersJSON.push({"ip":ip});
     fs.writeFileSync(registeredRunnersPath, JSON.stringify(runnersJSON, null, 2), 'utf8')
-
+    console.log("Success!")
     res.status(200).json({success: true});
 
 })
@@ -256,7 +269,7 @@ app.post('/login', (req, res) => {
 
 
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
 
@@ -372,11 +385,13 @@ const runnersJSON = JSON.parse(fs.readFileSync(registeredRunnersPath, 'utf8'));
 const runDataObjects = [];
 const sockets = [];
 
-function checkIfOpen(i, problemNumber){
+async function checkIfOpen(i, problemNumber){
+    if(i > activeRunners.length){
+        return -1;
+    }
     if(activeRunners[i] === true){
-        fetch('http://'+runnersJSON[i]['ip']+':3080/is-occupied')
-        .then(response => response.text())
-        .then(response => {
+        let response = await fetch('http://'+runnersJSON[i]['ip']+':3080/is-occupied')
+        response = await response.text();
             console.log(response, " ", activeRunners[i]);
             if(response === 'false'){
                 if(activeRunners[i] === true){
@@ -385,6 +400,7 @@ function checkIfOpen(i, problemNumber){
                     runDataObjects.push({
                         "runner-number": i,
                         "current-text": "",
+                        "code": "",
                         "problem-number": problemNumber,
                         "ip": runnersJSON[i]          
                     })
@@ -405,7 +421,7 @@ function checkIfOpen(i, problemNumber){
                 }
                 return false;
             }
-        })
+        
     }else{
         for(let j = 0; j < activeRunners.length; j++){
             if(activeRunners[j] === true){
@@ -435,12 +451,13 @@ function formatCode(code, problemNumber, language){
         const testcases = problemsJSON[problemNumber-1]['testcases'];
         const inputs = problemsJSON[problemNumber-1]['inputs'];
         for(let j = 0; j < testcases.length; j++){
+            if(testcases[j]['public']){
             const inputNames = [];
             for(let k = 0; k < inputs.length; k++){
                 inputNames.push(inputs[k]['python'] + '' + j);
                 insert+=inputs[k]['java'] + '' + j + ' = ' + testcases[j][inputs[k]['python']] + ';\n';
             }
-            insert+="System.out.print($$$);\n";
+            insert+="System.out.print(\"$$$\");\n";
             insert+=printerFunctionName+"("+problemsJSON[problemNumber-1]['method-name']+'(';
             for(let k = 0; k < inputNames.length; k++){
                 insert+=inputNames[k]+',';
@@ -448,9 +465,11 @@ function formatCode(code, problemNumber, language){
             insert = insert.substring(0, insert.length-1);
             insert+='));\n';
         }
+        }
         for(let j = code.length; j > -1; j--){
             if(code.charAt(j) == '}'){
                 code = code.substring(0, j) + insert + "}\n" + code.substring(j);
+                code = 'java-'+code;
                 console.log(code);
                 break;
             }
