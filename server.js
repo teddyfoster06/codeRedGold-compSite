@@ -8,7 +8,6 @@ const PORT = 3000;
 const wss = new WebSocket.Server({port:3001});
 
 wss.on('connection', (ws) => {
-    console.log("A client connected to web socket server");
     ws.on('message', (message) => {
         const requestJSON = JSON.parse(message);
         //1. Find an open container
@@ -18,7 +17,6 @@ wss.on('connection', (ws) => {
             if(requestJSON['username'] == teamsJSON[i]['username']){
                 if(requestJSON['password'] == teamsJSON[i]['password']){
                     for(let j = 0; j < activeRunners.length; j++){
-                        console.log("Testing " + activeRunners[j]);
                         if(activeRunners[j] === true){
                             checkIfOpen(j, requestJSON['problemNumber'])
                             .then(index => {
@@ -33,6 +31,16 @@ wss.on('connection', (ws) => {
                                 sockets[index].onmessage = (event) => {
                                     if(event.data != "Join Success"){
                                         runDataObjects[index]['current-text'] += event.data;
+                                        let outputs = runDataObjects[index]['current-text'].split("$$$");
+                                        outputs = outputs.slice(1);
+                                        let toSend = "";
+                                        let testcases = problemsJSON[runDataObjects[index]['problem-number']-1]['testcases']
+                                        for(let i = 0; i <outputs.length && i < testcases.length; i++){
+                                            toSend+=outputs[i]+"|"+(testcases[i]['output'] === outputs[i] ? "check" : "cross") + "$";
+                                        }
+                                        console.log(outputs);
+                                        console.log("Sending..." + toSend);
+                                        ws.send(toSend);
                                     }
                                     
                                     console.log(event.data);
@@ -70,6 +78,7 @@ wss.on('connection', (ws) => {
                                     }
                                     console.log("Tried to write the file");
                                     fs.writeFileSync(teamDataPath, JSON.stringify(teamDataJSON, null, 2), 'utf8');
+                                    activeRunners[runDataObjects[index]['runner-number']] = true;
                                     console.log(teamDataJSON[usernameIndex]['problems']);
 
 
@@ -500,7 +509,7 @@ function formatCode(code, problemNumber, language){
             insert += "\n"+problemsJSON[problemNumber-1]['customPrinterFunctions']['java'];
             insert += "\n";
         }else{
-            printerFunctionName = "System.out.println"
+            printerFunctionName = "System.out.print"
         }
         insert+="public static void main(String[] args){\n"
 
@@ -534,21 +543,6 @@ function formatCode(code, problemNumber, language){
 
     }
     return code;
-    
-    // sockets[index].onopen = (event) => {
-    //     console.log("Socket opened");
-    //     socket.send(code);
-    // }
-    // sockets[index].onmessage = (event) => {
-    //     event.data.text().then((text) => {
-    //         console.log(text);
-    //     })
-    // }
-    // sockets[index].onclose = (event) => {
-    //     console.log("Socket Closed:", event)
-    // }
-    // sockets[index].onerror = (event) => {
-    //     console.log("WebSocket error:", event);
-    // }
 }
+
 // runCode("public class Main { public static void main(String[] args) { System.out.println(\"Hello, World!\"); } }", 1, 'java');

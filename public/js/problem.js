@@ -299,13 +299,15 @@ function testCode(code, language, problemNumber){
 
   socket.onopen = () => {
     socket.send(JSON.stringify(testObject));
+    socket.onmessage = (event) => {
+      alert(event.data);
+      const response = JSON.parse(event.data);
+      logData(JSON.stringify(response));
+    }
   }
   
 
-  socket.onmessage = (event) => {
-    const response = JSON.parse(event.data);
-    logData(response);
-  }
+  
 }
 
 function submitCode(code, language, problemNumber){
