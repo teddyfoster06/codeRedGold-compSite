@@ -11,7 +11,7 @@ wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         const requestJSON = JSON.parse(message);
         //1. Find an open container
-        const teamsJSON = JSON.parse(fs.readFileSync(teamsPath, 'utf8'));
+        const teamsJSON = JSON.parse(readFile(teamsPath));
 
         for(let i = 0; i < teamsJSON.length; i++){
             if(requestJSON['username'] == teamsJSON[i]['username']){
@@ -31,16 +31,6 @@ wss.on('connection', (ws) => {
                                 sockets[index].onmessage = (event) => {
                                     if(event.data != "Join Success"){
                                         runDataObjects[index]['current-text'] += event.data;
-                                        let outputs = runDataObjects[index]['current-text'].split("$$$");
-                                        outputs = outputs.slice(1);
-                                        let toSend = "";
-                                        let testcases = problemsJSON[runDataObjects[index]['problem-number']-1]['testcases']
-                                        for(let i = 0; i <outputs.length && i < testcases.length; i++){
-                                            toSend+=outputs[i]+"|"+(testcases[i]['output'] === outputs[i] ? "check" : "cross") + "$";
-                                        }
-                                        console.log(outputs);
-                                        console.log("Sending..." + toSend);
-                                        ws.send(toSend);
                                     }
                                     
                                     console.log(event.data);
@@ -52,34 +42,24 @@ wss.on('connection', (ws) => {
                                     console.log("Prob number:" + JSON.stringify(runDataObjects[index]));
                                     const testcaseData = problemsJSON[runDataObjects[index]['problem-number']-1]['testcases'];
                                     
-                                    const teamDataJSON = JSON.parse(fs.readFileSync(teamDataPath, 'utf8'));
+                                    const teamDataJSON = JSON.parse(readFile(teamDatasPath + '/' + username.toLowerCase() + '.json'));
 
-                                    usernameIndex = -1;
-                    
-                                    for(let i = 0; i < teamDataJSON.length; i++){
-                                        console.log("Comparing " + teamDataJSON[i]['username'] + " and " + requestJSON['username'].toLowerCase());
-                                        if(teamDataJSON[i]['username'] == requestJSON['username'].toLowerCase()){
-                                            usernameIndex = i;
-                                            break;
-                                        }
-
-                                    }
-                                    console.log(usernameIndex)
+                                    
                                     
                                     outputs = outputs.filter(str => str !== '');
                                     console.log(outputs);
                                     for(let i = 0; i < outputs.length && i < testcaseData.length; i++){
-                                        teamDataJSON[usernameIndex]['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['your-output'] = outputs[i];
+                                        teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['your-output'] = outputs[i];
                                         if(outputs[i] == testcaseData[i]['output']){
-                                            teamDataJSON[usernameIndex]['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['status'] = 'check';
+                                            teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['status'] = 'check';
                                         }else{
-                                            teamDataJSON[usernameIndex]['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['status'] = 'cross';
+                                            teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['status'] = 'cross';
                                         }
                                     }
                                     console.log("Tried to write the file");
-                                    fs.writeFileSync(teamDataPath, JSON.stringify(teamDataJSON, null, 2), 'utf8');
+                                    writeFile(teamDataPath, JSON.stringify(teamDataJSON, null, 2));
                                     activeRunners[runDataObjects[index]['runner-number']] = true;
-                                    console.log(teamDataJSON[usernameIndex]['problems']);
+                                    console.log(teamDataJSON['problems']);
 
 
 
@@ -114,12 +94,12 @@ wss.on('connection', (ws) => {
 })
 
 const teamsPath = path.join(__dirname, 'database', 'teams.json');
-const teamDataPath = path.join(__dirname, 'database', 'teamData.json');
+const teamDatasPath = path.join(__dirname, 'database', 'teamDatas');
 const problemsPath = path.join(__dirname, 'database', 'problems.json');
 const compInfoPath = path.join(__dirname, 'database', 'compInfo.json');
 const registeredRunnersPath = path.join(__dirname, 'database', 'registeredRunners.json');
-const problemsJSON = JSON.parse(fs.readFileSync(problemsPath, 'utf8'));
-const compInfoJSON = JSON.parse(fs.readFileSync(compInfoPath, 'utf8'));
+const problemsJSON = JSON.parse(readFile(problemsPath));
+const compInfoJSON = JSON.parse(readFile(compInfoPath));
 
 
 // Middleware to parse JSON request bodies
@@ -140,7 +120,7 @@ app.get('/register-runner', (req, res) => {
     if(ip.startsWith('::ffff:')){
         ip=ip.substring(7);
     }
-    let runnersJSON = JSON.parse(fs.readFileSync(registeredRunnersPath, 'utf8'));
+    let runnersJSON = JSON.parse(readFile(registeredRunnersPath));
     for(let i = 0; i < runnersJSON.length; i++){
         if(runnersJSON[i]['ip'] === ip){
             console.log("Failure!")
@@ -149,7 +129,7 @@ app.get('/register-runner', (req, res) => {
         }
     }
     runnersJSON.push({"ip":ip});
-    fs.writeFileSync(registeredRunnersPath, JSON.stringify(runnersJSON, null, 2), 'utf8')
+    writeFile(registeredRunnersPath, JSON.stringify(runnersJSON, null, 2))
     console.log("Success!")
     res.status(200).json({success: true});
 
@@ -192,52 +172,42 @@ app.get('/problems-list', (req, res) => {
 })
 
 
-app.post("/value-java", (req, res) =>{
+app.post("/value-java", (req, res) => {
     const {username, password, problemNumber} = req.body;
-   
-    let teamDataJSON = JSON.parse(fs.readFileSync(teamDataPath, 'utf8'));
+    const filePath = teamDatasPath + '/' + username.toLowerCase() + '.json';
 
-    for(let i = 0; i < teamDataJSON.length; i++){
-        if(teamDataJSON[i]['username'].toLowerCase() == username.toLowerCase()){
-            if(teamDataJSON[i]['password'].toLowerCase() == password.toLowerCase()){
-                const problemData = teamDataJSON[i]['problems'];
-                res.status(200).json({ success: true, value: problemData[problemNumber-1]['value-java']});
-                return;
-                    
-                
-            }else{
-                res.status(401).json({ success: false, message: 'Bad Password' });
-                return;
-    
-            }
+    if (fileExists(filePath)) {
+        const userDataJSON = readFile(filePath);
+        if (userDataJSON['password'] === password) {
+            const problemData = userDataJSON['problems'];
+            res.status(200).json({ success: true, value: problemData[problemNumber-1]['value-java'] });
+            return;
+        } else {
+            res.status(401).json({ success: false, message: 'Bad Password' });
+            return;
         }
     }
 
     res.status(401).json({ success: false, message: 'Username not recognized' });
-    return;
 });
 
-app.post("/value-python", (req, res) =>{
+app.post("/value-python", (req, res) => {
     const {username, password, problemNumber} = req.body;
-    console.log("Value request recieved");
-    let teamDataJSON = JSON.parse(fs.readFileSync(teamDataPath, 'utf8'));
+    const filePath = teamDatasPath + '/' + username.toLowerCase() + '.json';
 
-    for(let i = 0; i < teamDataJSON.length; i++){
-        if(teamDataJSON[i]['username'].toLowerCase() == username.toLowerCase()){
-            if(teamDataJSON[i]['password'].toLowerCase() == password.toLowerCase()){
-                const problemData = teamDataJSON[i]['problems'];
-                    res.status(200).json({ success: true, value: problemData[problemNumber-1]['value-python']});
-                    return;
-            }else{
-                res.status(401).json({ success: false, message: 'Bad Password' });
-                return;
-    
-            }
+    if (fileExists(filePath)) {
+        const userDataJSON = readFile(filePath);
+        if (userDataJSON['password'] === password) {
+            const problemData = userDataJSON['problems'];
+            res.status(200).json({ success: true, value: problemData[problemNumber-1]['value-python'] });
+            return;
+        } else {
+            res.status(401).json({ success: false, message: 'Bad Password' });
+            return;
         }
     }
 
     res.status(401).json({ success: false, message: 'Username not recognized' });
-    return;
 });
 
 
@@ -246,7 +216,7 @@ app.post('/register', (req, res) => {
     const {teamName, username, password} = req.body;
     console.log(`Register request: ${teamName}, ${username}, ${password}`);
 
-    let teamsJSON = JSON.parse(fs.readFileSync(teamsPath, 'utf8'));
+    let teamsJSON = JSON.parse(readFile(teamsPath));
 
     for(let i = 0; i < teamsJSON.length; i++){
         if(teamsJSON[i]['team-name'].toLowerCase() == teamName.toLowerCase()){
@@ -262,25 +232,18 @@ app.post('/register', (req, res) => {
     const newTeamObject = {
         "team-name": teamName,
         "username": username.toLowerCase(),
-        "password": password,
-        "points": 0
+        "password": password
     }
-
-
     teamsJSON.push(newTeamObject);
 
-    fs.writeFileSync(teamsPath, JSON.stringify(teamsJSON, null, 2), 'utf8')
+    writeFile(teamsPath, JSON.stringify(teamsJSON, null, 2))
     
-
-    let teamDataJSON = JSON.parse(fs.readFileSync(teamDataPath, 'utf8'));
-    teamDataJSON.push({
+    writeFile(teamDatasPath+'\\'+username+'.json', JSON.stringify({
         "username": username.toLowerCase(),
         "password": password,
         "points": 0,
         "problems":generateUserProblemsArray()
-        
-    })
-    fs.writeFileSync(teamDataPath, JSON.stringify(teamDataJSON, null, 2), 'utf8')
+    }, null, 2))
 
     res.status(200).json({ success: true, message: 'Team Added' });
 
@@ -288,23 +251,22 @@ app.post('/register', (req, res) => {
 
 app.post('/testcases', (req, res) => {
     const {username, password, problemNumber} = req.body;
-    console.log(`Testcase request: ${username}, ${problemNumber}`);
+    console.log(`Testcase request: ${username}, ${password}, ${problemNumber}`);
 
-    let teamDataJSON = JSON.parse(fs.readFileSync(teamDataPath, 'utf8'));
-    for(let i = 0; i < teamDataJSON.length; i++){
-        if(teamDataJSON[i]['username'] == username){
-            if(teamDataJSON[i]['password'] == password){
-                const problem = teamDataJSON[i]['problems'][problemNumber-1];
-                res.status(200).json({success: true, testcases: problem['testcases'], message: 'Testcases sent'});
-                return;
-            }else{
-                res.status(401).json({success: false, message: 'Bad Password'});
-                return;
-            }
+    let filePath = teamDatasPath+'\\'+username.toLowerCase()+'.json';
+    console.log(filePath);
+    if(fileExists(filePath)){
+        let userDataJSON = readFile(filePath);
+        if(userDataJSON['password'] === password){
+            const problem = userDataJSON['problems'][problemNumber-1];
+            res.status(200).json({success: true, testcases: problem['testcases'], message: 'Testcases sent'});
+            return;
+        }else{
+            res.status(401).json({success: false, message: 'Bad Password'});
+            return
         }
-    }
-
-    res.status(401).json({ success: false, message: 'Username not recognized'});
+    }el
+    res.status(401).json({ success: false, message: 'Username not recognized'});    
 });
 
 
@@ -312,7 +274,7 @@ app.post('/testcases', (req, res) => {
 app.post('/login', (req, res) => {
     const {username, password} = req.body;
 
-    let teamsJSON = JSON.parse(fs.readFileSync(teamsPath, 'utf8'));
+    let teamsJSON = JSON.parse(readFile(teamsPath));
 
     for(let i = 0; i < teamsJSON.length; i++){
         if(teamsJSON[i]['username'] == username.toLowerCase()){
@@ -383,57 +345,39 @@ function generateUserProblemsArray(){
 }
 
 
-app.put("/updateValue-java", (req, res) =>{
-    const {username, password, problemNumber, newValue} = req.body;
-    console.log("Save request recieved");
-    let teamDataJSON = JSON.parse(fs.readFileSync(teamDataPath, 'utf8'));
+app.post("/updateValue-java", (req, res) => {
+    const {username, password, problemNumber, value} = req.body;
+    const filePath = teamDatasPath + '/' + username.toLowerCase() + '.json';
 
-    for(let i = 0; i < teamDataJSON.length; i++){
-        if(teamDataJSON[i]['username'].toLowerCase() == username.toLowerCase()){
-            if(teamDataJSON[i]['password'].toLowerCase() == password.toLowerCase()){
-                teamDataJSON[i]['problems'][problemNumber-1]['value-java'] = newValue;
-                res.status(200).json({ success: true});
-                fs.writeFileSync(teamDataPath, JSON.stringify(teamDataJSON, null, 2), 'utf8')
-console.log("File Updated");
-                return;
-                
-            }else{
-                res.status(401).json({ success: false, message: 'Bad Password' });
-                return;
-    
-            }
+    if (fileExists(filePath)) {
+        const userData = JSON.parse(readFile(filePath));
+        if (userData.password === password) {
+            userData.problems[problemNumber - 1]['value-java'] = value;
+            writeFile(filePath, JSON.stringify(userData, null, 2));
+            res.status(200).json({ success: true, message: 'Java value updated' });
+        } else {
+            res.status(401).json({ success: false, message: 'Bad Password' });
         }
+    } else {
+        res.status(401).json({ success: false, message: 'Username not recognized' });
     }
-
-    res.status(401).json({ success: false, message: 'Username not recognized' });
-    return;
 });
-app.put("/updateValue-python", (req, res) =>{
-    const {username, password, problemNumber, newValue} = req.body;
-    console.log("Save request recieved");
-    let teamDataJSON = JSON.parse(fs.readFileSync(teamDataPath, 'utf8'));
+app.post("/updateValue-java", (req, res) => {
+    const {username, password, problemNumber, value} = req.body;
+    const filePath = teamDatasPath + '/' + username.toLowerCase() + '.json';
 
-    for(let i = 0; i < teamDataJSON.length; i++){
-        if(teamDataJSON[i]['username'].toLowerCase() == username.toLowerCase()){
-            if(teamDataJSON[i]['password'].toLowerCase() == password.toLowerCase()){
-                
-                teamDataJSON[i]['problems'][problemNumber-1]['value-python'] = newValue;
-                res.status(200).json({success: true});
-                fs.writeFileSync(teamDataPath, JSON.stringify(teamDataJSON, null, 2), 'utf8')
-                console.log("File Updated");
-                return;
-                    
-                
-            }else{
-                res.status(401).json({ success: false, message: 'Bad Password' });
-                return;
-    
-            }
+    if (fileExists(filePath)) {
+        const userData = JSON.parse(readFile(filePath));
+        if (userData.password === password) {
+            userData.problems[problemNumber - 1]['value-java'] = value;
+            writeFile(filePath, JSON.stringify(userData, null, 2));
+            res.status(200).json({ success: true, message: 'Java value updated' });
+        } else {
+            res.status(401).json({ success: false, message: 'Bad Password' });
         }
+    } else {
+        res.status(401).json({ success: false, message: 'Username not recognized' });
     }
-
-    res.status(401).json({ success: false, message: 'Username not recognized' });
-    return;
 });
 
 
@@ -442,8 +386,8 @@ app.use((req, res) => {
     res.status(404).send('Not found');
   });
 
-const activeRunners = new Array(JSON.parse(fs.readFileSync(registeredRunnersPath, 'utf8')).length).fill(true);
-const runnersJSON = JSON.parse(fs.readFileSync(registeredRunnersPath, 'utf8'));
+const activeRunners = new Array(JSON.parse(readFile(registeredRunnersPath)).length).fill(true);
+const runnersJSON = JSON.parse(readFile(registeredRunnersPath));
 
 //socket, Runner number, current text, problem number
 const runDataObjects = [];
@@ -545,4 +489,18 @@ function formatCode(code, problemNumber, language){
     return code;
 }
 
-// runCode("public class Main { public static void main(String[] args) { System.out.println(\"Hello, World!\"); } }", 1, 'java');
+
+function writeFile(path, data){
+    return fs.writeFileSync(path, data)
+}
+
+function readFile(path){
+    return fs.readFileSync(path, 'utf8')
+}
+
+function fileExists(path){
+    return fs.existsSync(path);
+}
+
+
+

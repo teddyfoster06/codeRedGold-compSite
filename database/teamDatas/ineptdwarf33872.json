@@ -1,0 +1,24 @@
+{
+  "username": "ineptdwarf33872",
+  "password": "fords",
+  "points": 0,
+  "problems": [
+    {
+      "value-java": "class Main{public static int numberOfCitiesHit(char[][] regions, int n){\n\t//Write Java Here\n}}",
+      "value-python": "def numberOfCitiesHit(regions, n):\n\t#Write Python Here",
+      "testcases": [
+        {
+          "public": true,
+          "input": "regions={{'S', 'L', 'L', 'L', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'H', 'H', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'L', 'L', 'L', 'H', 'H', 'H', 'L', 'H', 'H'},{'H', 'L', 'H', 'L', 'L', 'L', 'H', 'L', 'L', 'H'},{'H', 'H', 'H', 'H', 'H', 'L', 'H', 'H', 'H', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'H', 'H', 'L', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'F', 'H', 'H'}}\nn=10",
+          "expected-output": "27\n",
+          "your-output": "",
+          "status": "cross"
+        },
+        {
+          "public": false,
+          "status": "cross"
+        }
+      ]
+    }
+  ]
+}
