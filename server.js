@@ -177,7 +177,7 @@ app.post("/value-java", (req, res) => {
     const filePath = teamDatasPath + '/' + username.toLowerCase() + '.json';
 
     if (fileExists(filePath)) {
-        const userDataJSON = readFile(filePath);
+        const userDataJSON = JSON.parse(readFile(filePath));
         if (userDataJSON['password'] === password) {
             const problemData = userDataJSON['problems'];
             res.status(200).json({ success: true, value: problemData[problemNumber-1]['value-java'] });
@@ -196,7 +196,7 @@ app.post("/value-python", (req, res) => {
     const filePath = teamDatasPath + '/' + username.toLowerCase() + '.json';
 
     if (fileExists(filePath)) {
-        const userDataJSON = readFile(filePath);
+        const userDataJSON = JSON.parse(readFile(filePath));
         if (userDataJSON['password'] === password) {
             const problemData = userDataJSON['problems'];
             res.status(200).json({ success: true, value: problemData[problemNumber-1]['value-python'] });
@@ -256,8 +256,12 @@ app.post('/testcases', (req, res) => {
     let filePath = teamDatasPath+'\\'+username.toLowerCase()+'.json';
     console.log(filePath);
     if(fileExists(filePath)){
-        let userDataJSON = readFile(filePath);
+        let userDataJSON = JSON.parse(readFile(filePath));
+        console.log(userDataJSON);
+        console.log(password);
+        console.log(userDataJSON['password']);
         if(userDataJSON['password'] === password){
+            console.log("sending tescases");
             const problem = userDataJSON['problems'][problemNumber-1];
             res.status(200).json({success: true, testcases: problem['testcases'], message: 'Testcases sent'});
             return;
@@ -265,7 +269,7 @@ app.post('/testcases', (req, res) => {
             res.status(401).json({success: false, message: 'Bad Password'});
             return
         }
-    }el
+    }
     res.status(401).json({ success: false, message: 'Username not recognized'});    
 });
 
