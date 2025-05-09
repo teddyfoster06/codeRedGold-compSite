@@ -1,0 +1,67 @@
+{
+  "username": "vy",
+  "password": "stupendous",
+  "points": 0,
+  "problems": [
+    {
+      "completed": "false",
+      "time-completed": "00:00:00",
+      "value-java": "class Main {\n\tpublic static int countSlips(char[] students, double[] distance) {\n\t\t// Write Java Here\n\t}\n}",
+      "value-python": "def countSlips(students, distance):\n\t# Write Python Here",
+      "testcases": [
+        {
+          "public": true,
+          "input": "students={'W', 'B', 'D', 'D', 'W', 'W', 'S', 'W', 'B', 'W', 'B', 'D', 'D', 'B', 'W'}\ndistance={1.1, 3.4, 0.6, 0.1, 5.2, 2.9, 3.4, 2.1, 1.4, 2.3, 1.4, 2.8, 3.1, 0.4, 0.2}",
+          "expected-output": "2\n",
+          "your-output": "",
+          "status": "cross"
+        },
+        {
+          "public": true,
+          "input": "students={'B', 'B', 'W', 'W', 'W', 'W'}\ndistance={2.5, 2.9, 4.5, 5.0, 2.0, 1.0}",
+          "expected-output": "2\n",
+          "your-output": "",
+          "status": "cross"
+        },
+        {
+          "public": false,
+          "status": "cross"
+        },
+        {
+          "public": false,
+          "status": "cross"
+        }
+      ]
+    },
+    {
+      "completed": "false",
+      "time-completed": "00:00:00",
+      "value-java": "class Main{\n\tpublic static int numberOfCitiesHit(char[][] regions, int n){\n\t\t//Write Java Here\n\t}\n}",
+      "value-python": "def numberOfCitiesHit(regions, n):\n\t#Write Python Here",
+      "testcases": [
+        {
+          "public": true,
+          "input": "regions={{'S', 'L', 'L', 'L', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'H', 'H', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'L', 'L', 'L', 'H', 'H', 'H', 'L', 'H', 'H'},{'H', 'L', 'H', 'L', 'L', 'L', 'H', 'L', 'L', 'H'},{'H', 'H', 'H', 'H', 'H', 'L', 'H', 'H', 'H', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'H', 'H', 'L', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'F', 'H', 'H'}}\nn=10",
+          "expected-output": "27\n",
+          "your-output": "",
+          "status": "cross"
+        },
+        {
+          "public": true,
+          "input": "regions={{'S', 'L', 'L', 'H', 'L', 'H', 'L', 'H'}, {'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L'}, {'L', 'L', 'H', 'H', 'L', 'H', 'L', 'L'}, {'L', 'H', 'L', 'L', 'L', 'L', 'H', 'F'}, {'H', 'L', 'L', 'H', 'H', 'L', 'L', 'H'}, {'L', 'L', 'L', 'L', 'L', 'H', 'L', 'L'}, {'H', 'H', 'H', 'L', 'L', 'L', 'L', 'L'}, {'H', 'L', 'H', 'L', 'L', 'L', 'L', 'H'}}\nn=8",
+          "expected-output": "11\n",
+          "your-output": "",
+          "status": "cross"
+        },
+        {
+          "public": false,
+          "status": "cross"
+        },
+        {
+          "public": false,
+          "status": "cross"
+        }
+      ]
+    }
+  ]
+}

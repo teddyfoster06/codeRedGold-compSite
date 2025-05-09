@@ -13,15 +13,14 @@ wss.on('connection', (ws) => {
         ws.send("Finding Open Container");
         const requestJSON = JSON.parse(message);
         //1. Find an open container
-        const teamsJSON = JSON.parse(readFile(teamsPath));
 
-        for(let i = 0; i < teamsJSON.length; i++){
-            if(fileExists(teamDatasPath +'/'+requestJSON['username']+'.json')){
-                if(JSON.parse(readFile(teamDatasPath +'/'+requestJSON['username']+'.json'))['password'] == requestJSON['password']){
+            if(fileExists(path.join(teamDatasPath, requestJSON['username']+'.json'))){
+                if(JSON.parse(readFile(path.join(teamDatasPath, requestJSON['username']+'.json')))['password'] == requestJSON['password']){
                     findOpenContainer(requestJSON['problemNumber'])
                     .then(index => {
+                        ws.send("Container found|Running Code");
                         console.log("Logging Relevant Objects:");
-                        console.log(runDataObjects[index]);
+                        console.log(index);
                         runDataObjects[index]['code'] = formatCode(requestJSON['code'], requestJSON['problemNumber'], requestJSON['language'], (requestJSON['type'] === 'submit'));
                         sockets[index].onopen = () => {
                             
@@ -33,18 +32,18 @@ wss.on('connection', (ws) => {
                                 runDataObjects[index]['current-text'] += event.data;
                             }
                             console.log("Event data:");
-                            console.log(event.data);
                         }
                         sockets[index].onclose = (event) => {
+                            ws.send("Completed! Please wait for results");
                             console.log("Connection closed: ");
-                            console.log(event);
-                            console.log(runDataObjects[index]['current-text']);
+                            
+                            console.log(sockets.length);
+                            console.log(index);
 
                             let outputs = runDataObjects[index]['current-text'].split("$$$");
-                            console.log("Prob number:" + JSON.stringify(runDataObjects[index]));
                             const testcaseData = problemsJSON[runDataObjects[index]['problem-number']-1]['testcases'];
                             
-                            const teamDataJSON = JSON.parse(readFile(teamDatasPath + '/' + requestJSON['username'].toLowerCase() + '.json'));
+                            const teamDataJSON = JSON.parse(readFile(path.join(teamDatasPath, requestJSON['username'].toLowerCase() + '.json')));
                             outputs.shift();
                             console.log("outputs:");
                             console.log(outputs);
@@ -54,7 +53,6 @@ wss.on('connection', (ws) => {
                             if(requestJSON['type'] === 'submit'){
                                 console.log("Type is submit");
                                 console.log(outputs);
-                                console.log(testcaseData);
                                 allCorrect = true;
                                 for(let i = 0; i < outputs.length && i < testcaseData.length; i++){
                                     console.log(testcaseData[i]['output'] == outputs[i]);
@@ -86,10 +84,13 @@ wss.on('connection', (ws) => {
                                 teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['time-completed'] =d.toISOString();
                                 let points = 0;
                                 for(let i = 0; i < teamDataJSON['problems'].length; i++){
+                                    console.log(teamDataJSON['problems'])
                                     if(teamDataJSON['problems'][i]['completed'] === 'true'){
-                                        points += parseInt(problemsJSON[i]['point-value']);
+                                        points += parseInt(problemsJSON[i]['problem-value']);
                                     }
                                 }
+                                console.log("Points:");
+                                console.log(points);
                                 teamDataJSON['points'] = points;
                             }
 
@@ -97,11 +98,11 @@ wss.on('connection', (ws) => {
                             
                             
                             console.log("Tried to write the file");
-                            writeFile(teamDatasPath + '/' + requestJSON['username'].toLowerCase() + '.json', JSON.stringify(teamDataJSON, null, 2));
+                            writeFile(path.join(teamDatasPath, requestJSON['username'].toLowerCase() + '.json'), JSON.stringify(teamDataJSON, null, 2));
                             runners[runDataObjects[index]['runner-number']]['available'] = true;
-                            sockets.splice(index);
-                            runDataObjects.splice(index);
-                            console.log(teamDataJSON['problems'][1]['testcases']);
+                            delete sockets[index];
+                            delete runDataObjects[index];
+                            console.log(ws.readyState);
                             console.log("Sending done");
                             ws.send("Done.")
 
@@ -123,7 +124,7 @@ wss.on('connection', (ws) => {
             }else{
                 ws.close(1008, "Bad Username");
             }
-        }
+        
 
         
 
@@ -155,12 +156,16 @@ const runners = [];
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-app.get('/points', (req, res) => {
-    const {username} = req.query;
+app.post('/points', (req, res) => {
+    console.log("Recieved points request");
+    const {username} = req.body;
+    console.log(username);
     try{
-        res.status(200).json({points: JSON.parse(readFile(teamDatasPath+'/'+username.toLowerCase()+'.json'))['points']});
-    }catch(error){
 
+        console.log("Pointss: "+JSON.parse(readFile(path.join(teamDatasPath, username.toLowerCase()+'.json')))['points']);
+        res.status(200).json({points: JSON.parse(readFile(path.join(teamDatasPath, username.toLowerCase()+'.json')))['points']});
+    }catch(error){
+        console.log(error);
     }
     
 });
@@ -238,7 +243,7 @@ app.get('/problems-list', (req, res) => {
 
 app.post("/value-java", (req, res) => {
     const {username, password, problemNumber} = req.body;
-    const filePath = teamDatasPath + '/' + username.toLowerCase() + '.json';
+    const filePath = path.join(teamDatasPath, username.toLowerCase() + '.json');
 
     if (fileExists(filePath)) {
         const userDataJSON = JSON.parse(readFile(filePath));
@@ -258,7 +263,7 @@ app.post("/value-java", (req, res) => {
 
 app.post("/value-python", (req, res) => {
     const {username, password, problemNumber} = req.body;
-    const filePath = teamDatasPath + '/' + username.toLowerCase() + '.json';
+    const filePath = path.join(teamDatasPath, username.toLowerCase() + '.json');
 
     if (fileExists(filePath)) {
         const userDataJSON = JSON.parse(readFile(filePath));
@@ -303,7 +308,7 @@ app.post('/register', (req, res) => {
 
     writeFile(teamsPath, JSON.stringify(teamsJSON, null, 2))
     
-    writeFile(teamDatasPath+'\\'+username+'.json', JSON.stringify({
+    writeFile(path.join(teamDatasPath, username.toLowerCase()+'.json'), JSON.stringify({
         "username": username.toLowerCase(),
         "password": password,
         "points": 0,
@@ -318,11 +323,10 @@ app.post('/testcases', (req, res) => {
     const {username, password, problemNumber} = req.body;
     console.log(`Testcase request: ${username}, ${password}, ${problemNumber}`);
 
-    let filePath = teamDatasPath+'\\'+username.toLowerCase()+'.json';
+    let filePath = path.join(teamDatasPath, username.toLowerCase()+'.json');
     console.log(filePath);
     if(fileExists(filePath)){
         let userDataJSON = JSON.parse(readFile(filePath));
-        console.log(userDataJSON);
         console.log(password);
         console.log(userDataJSON['password']);
         if(userDataJSON['password'] === password){
@@ -418,9 +422,8 @@ function generateUserProblemsArray(){
 
 app.post("/updateValue-java", (req, res) => {
     const {username, password, problemNumber, value} = req.body;
-    console.log("Save request in");
-    console.log(value)
-    const filePath = teamDatasPath + '/' + username.toLowerCase() + '.json';
+   
+    const filePath = path.join(teamDatasPath, username.toLowerCase() + '.json');
 
     if (fileExists(filePath)) {
         const userData = JSON.parse(readFile(filePath));
@@ -437,9 +440,8 @@ app.post("/updateValue-java", (req, res) => {
 });
 app.post("/updateValue-python", (req, res) => {
     const {username, password, problemNumber, value} = req.body;
-    console.log("Save request in");
-    console.log(value)
-    const filePath = teamDatasPath + '/' + username.toLowerCase() + '.json';
+   
+    const filePath = path.join(teamDatasPath, username.toLowerCase() + '.json');
 
     if (fileExists(filePath)) {
         const userData = JSON.parse(readFile(filePath));
@@ -507,13 +509,43 @@ function formatCode(code, problemNumber, language, isSubmission){
             if(code.charAt(j) == '}'){
                 code = code.substring(0, j) + insert + "}\n" + code.substring(j);
                 code = 'java-'+code;
-                console.log(code);
                 break;
             }
         }
     }else{
+        let printerFunctionName;
+        let insert = "\n"
+        if(problemsJSON[problemNumber-1]['has-customPrinterFunction']){
+            printerFunctionName = problemsJSON[problemNumber-1]['customPrinterFunctions']['name']
+            insert += "\n"+problemsJSON[problemNumber-1]['customPrinterFunctions']['python'];
+            insert += "\n";
+        }else{
+            printerFunctionName = "print"
+        }
 
+        const testcases = problemsJSON[problemNumber-1]['testcases'];
+        const inputs = problemsJSON[problemNumber-1]['inputs'];
+        for(let j = 0; j < testcases.length; j++){
+            if(isSubmission || testcases[j]['public']){
+            const inputNames = [];
+            for(let k = 0; k < inputs.length; k++){
+                inputNames.push(inputs[k]['python'] + '' + j);
+                insert+=inputs[k]['python'] + '' + j + ' = ' + testcases[j][inputs[k]['python']].replace(/{/g, "[").replace(/}/g, "]") + ';\n';
+            }
+            insert+="print(\"$$$\");\n";
+            insert+=printerFunctionName+"("+problemsJSON[problemNumber-1]['method-name']+'(';
+            for(let k = 0; k < inputNames.length; k++){
+                insert+=inputNames[k]+',';
+            }
+            insert = insert.substring(0, insert.length-1);
+            insert+='));\n';
+        }
+        }
+        code = 'python-'+code + insert
+        
     }
+    console.log("Formatted:");
+    console.log(code);
     return code;
 }
 
@@ -578,15 +610,15 @@ async function findOpenContainer(problemNumber){
         console.log("First valid response:", validResults[0]);
         const i = validResults[0];
         runners[i]['available'] = false;
-        sockets.push(new WebSocket('ws://'+runnersJSON[i]['ip']+':3080'))
-        runDataObjects.push({
+        pushToFirstEmptySlot(sockets, new WebSocket('ws://'+runnersJSON[i]['ip']+':3080'))
+        const k = pushToFirstEmptySlot(runDataObjects, {
             "runner-number": i,
             "current-text": "",
             "code": "",
             "problem-number": parseInt(problemNumber),
             "ip": runners[i]['ip']          
         })
-        return sockets.length-1
+        return k;
     } else {
         console.log("No valid responses.");
         return null;
@@ -685,6 +717,17 @@ doPreFlightChecks();
 // }
     
 // }
+function pushToFirstEmptySlot(arr, value) {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] === undefined) {
+      arr[i] = value;  // Fill the first empty slot
+      return i;
+    }
+  }
+  // If no empty slot found, push to the end
+  arr.push(value);
+  return arr.length-1;
+}
 
 
 

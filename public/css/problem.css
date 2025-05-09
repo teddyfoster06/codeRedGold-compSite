@@ -5,6 +5,24 @@
     top: 0;
     left:0;
 }
+#button-loader{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 998;
+    background-color: rgba(29, 29, 29, 0.7);
+    display: none;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+
+}
+#status-text{
+    display: none;
+    text-align: center;
+    justify-content: center;
+    width: 100%;
+}
 #python-editor{
     z-index: 1;
 }

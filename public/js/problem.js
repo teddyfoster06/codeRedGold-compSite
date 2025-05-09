@@ -1,5 +1,5 @@
 // const ENDPOINT = '192.168.86.36'
-const ENDPOINT = 'localhost'
+const ENDPOINT = '10.58.28.21'
 let currentProblemNumber = 2;
 
 const javaEditor = ace.edit("java-editor", {
@@ -20,6 +20,8 @@ const sockets = []
 const testButtonRef = document.getElementById('testButton');
 const submitButtonRef = document.getElementById('submitButton');
 const descriptionTabButtonRef = document.getElementById("desc-tab-but");
+const buttonLoaderRef = document.getElementById('button-loader');
+const runStatusRef = document.getElementById('status-text');
 let lastSavedValuePython = "";
 let lastSavedValueJava = "";
 
@@ -66,6 +68,7 @@ languageSelectorRef.addEventListener('change', () => {
       getValue('java').then(result =>{
         document.getElementById('editor-loading').style.display = 'none'
         editor.setValue(result, -1);
+        clearTimeout(timeoutID);
       })
       editor.session.setMode("ace/mode/java");
       break;
@@ -77,6 +80,7 @@ languageSelectorRef.addEventListener('change', () => {
       getValue('python').then(result =>{
         document.getElementById('editor-loading').style.display = 'none'
         editor.setValue(result, -1);
+        clearTimeout(timeoutID);
       })
       editor.session.setMode("ace/mode/python");
       break;
@@ -137,6 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
     getValue(languageSelectorRef.value).then(result =>{
       document.getElementById('editor-loading').style.display = 'none'
       editor.setValue(result, -1);
+      clearTimeout(timeoutID);
     })
     
     document.getElementById('page-loading').style.display = 'none'
@@ -298,6 +303,9 @@ async function saveEditor(number, value){
 }
 
 function testCode(code, language, problemNumber){
+  buttonLoaderRef.style.display = 'flex';
+  runStatusRef.style.display = 'flex';
+  
   const testObject = {
     'type': 'test',
     'code': code,
@@ -307,20 +315,41 @@ function testCode(code, language, problemNumber){
     'password': cookies[1]
   }
   //Set up websocket and send data
-  const socket = new WebSocket('ws://localhost:3001');
+  let socket;
+  try{
+    socket = new WebSocket('ws://' + ENDPOINT + ':3001');
+    
+    logData("Socket successfully created");
+  }catch(e){
+    logData(e);
+  }
+  let timeout = setTimeout(() => {
+    buttonLoaderRef.style.display = 'none';
+    try{socket.close()}catch(error){}
+    runStatusRef.innerHTML = 'Request Timed Out-Please Try Again Later'
+  }, 5000)
 
   socket.onopen = () => {
-    socket.send(JSON.stringify(testObject));
+    clearTimeout(timeout);
+    logData("Websocket is open");
+    setTimeout(() => {
+      socket.send(JSON.stringify(testObject));
+
+    }, 100)
     
   }
+  socket.onerror = (error) => {
+    logData(error);
+  }
   socket.onclose = (event) => {
-    console.log('WebSocket closed', event);
+    // logData('WebSocket closed', event);
   };
-  socket.onmessage = (event) => {
+    socket.onmessage = (event) => {
     console.log("Here is the message from the server");
     console.log(event);
     if(event.data === 'Done.'){
-      console.log("Were done")
+      logData("Were done")
+      
       fetch('http://' + ENDPOINT + ':3000/testcases', {
         method: 'POST',
         headers: {
@@ -335,13 +364,22 @@ function testCode(code, language, problemNumber){
       .then(response => response.json())
       .then(data =>{
         console.log(data);
+        logData("client requested and recieved testcases following submit")
         handleTestcases(data);
+        
+        requestAnimationFrame(() => {
+        buttonLoaderRef.style.display = 'none';
+        runStatusRef.innerHTML = 'Run Completed'
+        });
         
       })
       fetch('http://' + ENDPOINT + ':3000/points').then(response => response.json()).then(data => {
         handlePoints(data);
       });
+    }else{
+      runStatusRef.innerHTML = 'Run Status:' + event.data;
     }
+
     
     // const response = JSON.parse(event.data);
     // logData(JSON.stringify(response));
@@ -349,6 +387,9 @@ function testCode(code, language, problemNumber){
 }
 
 function submitCode(code, language, problemNumber){
+  buttonLoaderRef.style.display = 'flex';
+  runStatusRef.style.display = 'flex';
+  
   const testObject = {
     'type': 'submit',
     'code': code,
@@ -358,20 +399,41 @@ function submitCode(code, language, problemNumber){
     'password': cookies[1]
   }
   //Set up websocket and send data
-  const socket = new WebSocket('ws://localhost:3001');
+  let socket;
+  try{
+    socket = new WebSocket('ws://' + ENDPOINT + ':3001');
+    
+    logData("Socket successfully created");
+  }catch(e){
+    logData(e);
+  }
+  let timeout = setTimeout(() => {
+    buttonLoaderRef.style.display = 'none';
+    try{socket.close()}catch(error){}
+    runStatusRef.innerHTML = 'Request Timed Out-Please Try Again Later'
+  }, 5000)
 
   socket.onopen = () => {
-    socket.send(JSON.stringify(testObject));
+    clearTimeout(timeout);
+    logData("Websocket is open");
+    setTimeout(() => {
+      socket.send(JSON.stringify(testObject));
+
+    }, 100)
     
   }
+  socket.onerror = (error) => {
+    logData(error);
+  }
   socket.onclose = (event) => {
-    console.log('WebSocket closed', event);
+    // logData('WebSocket closed', event);
   };
-  socket.onmessage = (event) => {
+    socket.onmessage = (event) => {
     console.log("Here is the message from the server");
     console.log(event);
     if(event.data === 'Done.'){
-      console.log("Were done")
+      logData("Were done")
+      
       fetch('http://' + ENDPOINT + ':3000/testcases', {
         method: 'POST',
         headers: {
@@ -386,13 +448,32 @@ function submitCode(code, language, problemNumber){
       .then(response => response.json())
       .then(data =>{
         console.log(data);
+        logData("client requested and recieved testcases following submit")
         handleTestcases(data);
         
+        requestAnimationFrame(() => {
+        buttonLoaderRef.style.display = 'none';
+        runStatusRef.innerHTML = 'Run Completed'
+        });
+        
       })
-      fetch('http://' + ENDPOINT + ':3000/points').then(response => response.json()).then(data => {
+      logData("Looking for points");
+      const pointsRequest = fetch('http://' + ENDPOINT + ':3000/points', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        username: cookies[0]
+    })
+  }).then(response => response.json()).then(data => {
+        logData(data);
         handlePoints(data);
       });
+    }else{
+      runStatusRef.innerHTML = 'Run Status:' + event.data;
     }
+
     
     // const response = JSON.parse(event.data);
     // logData(JSON.stringify(response));
@@ -403,11 +484,14 @@ testButtonRef.addEventListener('click', () => {
   testCode(editor.getValue(), languageSelectorRef.value, currentProblemNumber)
 })
 submitButtonRef.addEventListener('click', () => {
+  logData("Editor Value:");
+  logData(editor.getValue());
   submitCode(editor.getValue(), languageSelectorRef.value, currentProblemNumber)
-
+  
 })
 
 function loadProblem(number){
+  clearTimeout(timeoutID);
   if(number !== currentProblemNumber){document.getElementById('page-loading').style.display = 'flex'
   openTab({currentTarget:descriptionTabButtonRef}, 'description');
   saveEditor(currentProblemNumber, editor.getValue());
@@ -444,6 +528,7 @@ function loadProblem(number){
     getValue(languageSelectorRef.value).then(result =>{
       document.getElementById('editor-loading').style.display = 'none'
       editor.setValue(result, -1);
+      clearTimeout(timeoutID);
     })
     document.getElementById('page-loading').style.display = 'none'
     
@@ -468,5 +553,5 @@ document.getElementById('closeButton').addEventListener('click', () => {
   popup.style.display = "none";      
 });
 function handlePoints(data){
-  document.getElementById('points-div').innerHTML = data['points']
+  document.getElementById('points-div').innerHTML = "Points: " + data['points'];
 }

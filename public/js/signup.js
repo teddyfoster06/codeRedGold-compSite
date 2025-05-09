@@ -1,5 +1,6 @@
 // const ENDPOINT = '192.168.86.36'
-const ENDPOINT = 'localhost'
+// const ENDPOINT = 'localhost'
+const ENDPOINT = '10.58.28.21'
 
 document.getElementById('submit-button').addEventListener('click', function(event) {
 
