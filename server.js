@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const WebSocket = require('ws');
+const { register } = require('module');
 const app = express();
 const PORT = 3000;
 
@@ -9,46 +10,67 @@ const wss = new WebSocket.Server({port:3001});
 
 wss.on('connection', (ws) => {
     ws.on('message', (message) => {
+        ws.send("Finding Open Container");
         const requestJSON = JSON.parse(message);
         //1. Find an open container
         const teamsJSON = JSON.parse(readFile(teamsPath));
 
         for(let i = 0; i < teamsJSON.length; i++){
-            if(requestJSON['username'] == teamsJSON[i]['username']){
-                if(requestJSON['password'] == teamsJSON[i]['password']){
-                    for(let j = 0; j < activeRunners.length; j++){
-                        if(activeRunners[j] === true){
-                            checkIfOpen(j, requestJSON['problemNumber'])
-                            .then(index => {
-                                console.log("Logging Relevant Objects:");
-                                console.log(sockets[index]);
-                                runDataObjects[index]['code'] = formatCode(requestJSON['code'], requestJSON['problemNumber'], requestJSON['language']);
-                                sockets[index].onopen = () => {
-                                    
-                                    sockets[index].send(runDataObjects[index]['code']);
+            if(fileExists(teamDatasPath +'/'+requestJSON['username']+'.json')){
+                if(JSON.parse(readFile(teamDatasPath +'/'+requestJSON['username']+'.json'))['password'] == requestJSON['password']){
+                    findOpenContainer(requestJSON['problemNumber'])
+                    .then(index => {
+                        console.log("Logging Relevant Objects:");
+                        console.log(runDataObjects[index]);
+                        runDataObjects[index]['code'] = formatCode(requestJSON['code'], requestJSON['problemNumber'], requestJSON['language'], (requestJSON['type'] === 'submit'));
+                        sockets[index].onopen = () => {
+                            
+                            sockets[index].send(runDataObjects[index]['code']);
 
-                                };
-                                sockets[index].onmessage = (event) => {
-                                    if(event.data != "Join Success"){
-                                        runDataObjects[index]['current-text'] += event.data;
+                        };
+                        sockets[index].onmessage = (event) => {
+                            if(event.data != "Join Success"){
+                                runDataObjects[index]['current-text'] += event.data;
+                            }
+                            console.log("Event data:");
+                            console.log(event.data);
+                        }
+                        sockets[index].onclose = (event) => {
+                            console.log("Connection closed: ");
+                            console.log(event);
+                            console.log(runDataObjects[index]['current-text']);
+
+                            let outputs = runDataObjects[index]['current-text'].split("$$$");
+                            console.log("Prob number:" + JSON.stringify(runDataObjects[index]));
+                            const testcaseData = problemsJSON[runDataObjects[index]['problem-number']-1]['testcases'];
+                            
+                            const teamDataJSON = JSON.parse(readFile(teamDatasPath + '/' + requestJSON['username'].toLowerCase() + '.json'));
+                            outputs.shift();
+                            console.log("outputs:");
+                            console.log(outputs);
+                            let correct = 0;
+                            let total = 0;
+                            let allCorrect;
+                            if(requestJSON['type'] === 'submit'){
+                                console.log("Type is submit");
+                                console.log(outputs);
+                                console.log(testcaseData);
+                                allCorrect = true;
+                                for(let i = 0; i < outputs.length && i < testcaseData.length; i++){
+                                    console.log(testcaseData[i]['output'] == outputs[i]);
+                                    teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['your-output'] = outputs[i];
+                                    if(outputs[i] == testcaseData[i]['output']){
+                                        teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['status'] = 'check';
+                                    }else{
+                                        teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['status'] = 'cross';
+                                        allCorrect = false;
                                     }
-                                    
-                                    console.log(event.data);
                                 }
-                                sockets[index].onclose = () => {
-                                    console.log(runDataObjects[index]['current-text']);
-
-                                    let outputs = runDataObjects[index]['current-text'].split("$$$");
-                                    console.log("Prob number:" + JSON.stringify(runDataObjects[index]));
-                                    const testcaseData = problemsJSON[runDataObjects[index]['problem-number']-1]['testcases'];
-                                    
-                                    const teamDataJSON = JSON.parse(readFile(teamDatasPath + '/' + username.toLowerCase() + '.json'));
-
-                                    
-                                    
-                                    outputs = outputs.filter(str => str !== '');
-                                    console.log(outputs);
-                                    for(let i = 0; i < outputs.length && i < testcaseData.length; i++){
+                                console.log(teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['testcases']);
+                            }else{
+                                allCorrect = false;
+                                for(let i = 0; i < outputs.length && i < testcaseData.length; i++){
+                                    if(testcaseData[i]['public']){
                                         teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['your-output'] = outputs[i];
                                         if(outputs[i] == testcaseData[i]['output']){
                                             teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['status'] = 'check';
@@ -56,19 +78,44 @@ wss.on('connection', (ws) => {
                                             teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['testcases'][i]['status'] = 'cross';
                                         }
                                     }
-                                    console.log("Tried to write the file");
-                                    writeFile(teamDataPath, JSON.stringify(teamDataJSON, null, 2));
-                                    activeRunners[runDataObjects[index]['runner-number']] = true;
-                                    console.log(teamDataJSON['problems']);
-
-
-
-
-
                                 }
-                            });
+                            }
+                            if(allCorrect){
+                                teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['completed'] = "true";
+                                const d = new Date();
+                                teamDataJSON['problems'][runDataObjects[index]['problem-number']-1]['time-completed'] =d.toISOString();
+                                let points = 0;
+                                for(let i = 0; i < teamDataJSON['problems'].length; i++){
+                                    if(teamDataJSON['problems'][i]['completed'] === 'true'){
+                                        points += parseInt(problemsJSON[i]['point-value']);
+                                    }
+                                }
+                                teamDataJSON['points'] = points;
+                            }
+
+                            
+                            
+                            
+                            console.log("Tried to write the file");
+                            writeFile(teamDatasPath + '/' + requestJSON['username'].toLowerCase() + '.json', JSON.stringify(teamDataJSON, null, 2));
+                            runners[runDataObjects[index]['runner-number']]['available'] = true;
+                            sockets.splice(index);
+                            runDataObjects.splice(index);
+                            console.log(teamDataJSON['problems'][1]['testcases']);
+                            console.log("Sending done");
+                            ws.send("Done.")
+
+
                         }
-                    }
+                    });
+
+                    // for(let j = 0; j < activeRunners.length; j++){
+                    //     if(activeRunners[j] === true){
+                            
+                    //         // checkIfOpen(j, requestJSON['problemNumber'])
+                            
+                    //     }
+                    // }
 
                 }else{
                     ws.close(1008, "Bad Password");
@@ -101,9 +148,25 @@ const registeredRunnersPath = path.join(__dirname, 'database', 'registeredRunner
 const problemsJSON = JSON.parse(readFile(problemsPath));
 const compInfoJSON = JSON.parse(readFile(compInfoPath));
 
+const runners = [];
+
+
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+
+app.get('/points', (req, res) => {
+    const {username} = req.query;
+    try{
+        res.status(200).json({points: JSON.parse(readFile(teamDatasPath+'/'+username.toLowerCase()+'.json'))['points']});
+    }catch(error){
+
+    }
+    
+});
+
+
+
 
 
 
@@ -129,6 +192,7 @@ app.get('/register-runner', (req, res) => {
         }
     }
     runnersJSON.push({"ip":ip});
+    runners.push({ip: ip, available: true});
     writeFile(registeredRunnersPath, JSON.stringify(runnersJSON, null, 2))
     console.log("Success!")
     res.status(200).json({success: true});
@@ -180,6 +244,7 @@ app.post("/value-java", (req, res) => {
         const userDataJSON = JSON.parse(readFile(filePath));
         if (userDataJSON['password'] === password) {
             const problemData = userDataJSON['problems'];
+            console.log(problemData);
             res.status(200).json({ success: true, value: problemData[problemNumber-1]['value-java'] });
             return;
         } else {
@@ -307,6 +372,8 @@ function generateUserProblemsArray(){
     problemsArray = [];
     for(let i = 0; i < problemsJSON.length; i++){
         problemObject = {
+            "completed": "false",
+            "time-completed": "00:00:00",
             "number": problemsJSON[i]['problem-number'],
             "value-java": problemsJSON[i]['boilerplate-java'],
             "value-python": problemsJSON[i]['boilerplate-python'],
@@ -351,6 +418,8 @@ function generateUserProblemsArray(){
 
 app.post("/updateValue-java", (req, res) => {
     const {username, password, problemNumber, value} = req.body;
+    console.log("Save request in");
+    console.log(value)
     const filePath = teamDatasPath + '/' + username.toLowerCase() + '.json';
 
     if (fileExists(filePath)) {
@@ -366,14 +435,16 @@ app.post("/updateValue-java", (req, res) => {
         res.status(401).json({ success: false, message: 'Username not recognized' });
     }
 });
-app.post("/updateValue-java", (req, res) => {
+app.post("/updateValue-python", (req, res) => {
     const {username, password, problemNumber, value} = req.body;
+    console.log("Save request in");
+    console.log(value)
     const filePath = teamDatasPath + '/' + username.toLowerCase() + '.json';
 
     if (fileExists(filePath)) {
         const userData = JSON.parse(readFile(filePath));
         if (userData.password === password) {
-            userData.problems[problemNumber - 1]['value-java'] = value;
+            userData.problems[problemNumber - 1]['value-python'] = value;
             writeFile(filePath, JSON.stringify(userData, null, 2));
             res.status(200).json({ success: true, message: 'Java value updated' });
         } else {
@@ -397,56 +468,9 @@ const runnersJSON = JSON.parse(readFile(registeredRunnersPath));
 const runDataObjects = [];
 const sockets = [];
 
-async function checkIfOpen(i, problemNumber){
-    if(i > activeRunners.length){
-        return -1;
-    }
-    if(activeRunners[i] === true){
-        let response = await fetch('http://'+runnersJSON[i]['ip']+':3080/is-occupied')
-        response = await response.text();
-            console.log(response, " ", activeRunners[i]);
-            if(response === 'false'){
-                if(activeRunners[i] === true){
-                    activeRunners[i] = false;
-                    sockets.push(new WebSocket('ws://'+runnersJSON[i]['ip']+':3080'))
-                    console.log("Checking if open: " + problemNumber)
-                    runDataObjects.push({
-                        "runner-number": i,
-                        "current-text": "",
-                        "code": "",
-                        "problem-number": parseInt(problemNumber),
-                        "ip": runnersJSON[i]          
-                    })
-                    return sockets.length-1
-                }else{
-                    for(let j = 0; j < activeRunners.length; j++){
-                        if(activeRunners[j] === true){
-                            return checkIfOpen(j, problemNumber);
-                        }
-                    }
-                    return false;
-                }
-            }else{
-                for(let j = 0; j < activeRunners.length; j++){
-                    if(activeRunners[j] === true){
-                        return checkIfOpen(j, problemNumber);
-                    }
-                }
-                return false;
-            }
-        
-    }else{
-        for(let j = 0; j < activeRunners.length; j++){
-            if(activeRunners[j] === true){
-                return checkIfOpen(j, problemNumber);
-            }
-        }
-        return false;
-    }
-    
-}
 
-function formatCode(code, problemNumber, language){
+
+function formatCode(code, problemNumber, language, isSubmission){
     let index;
     if(language == 'java'){
 
@@ -464,7 +488,7 @@ function formatCode(code, problemNumber, language){
         const testcases = problemsJSON[problemNumber-1]['testcases'];
         const inputs = problemsJSON[problemNumber-1]['inputs'];
         for(let j = 0; j < testcases.length; j++){
-            if(testcases[j]['public']){
+            if(isSubmission || testcases[j]['public']){
             const inputNames = [];
             for(let k = 0; k < inputs.length; k++){
                 inputNames.push(inputs[k]['python'] + '' + j);
@@ -505,6 +529,162 @@ function readFile(path){
 function fileExists(path){
     return fs.existsSync(path);
 }
+
+async function findOpenContainer(problemNumber){
+    const controllers = [];
+    const fetchPromises = [];
+
+    for(let i = 0; i < runners.length; i++){
+        let fetchPromise;
+        console.log("runners:");
+        console.log(runners);
+        if(!runners[i]['available']){
+            fetchPromise = Promise.resolve(null); 
+        }else{
+            const controller = new AbortController();
+            controllers.push(controller);
+    
+            fetchPromise = fetch('http://'+runners[i]['ip']+':3080/is-occupied', { signal: controller.signal })
+            .then(async (response) => {
+                const result = await response.text();
+    
+                if (result === "false") {
+                    for (let ctrl of controllers) {
+                      ctrl.abort();
+                    }
+                    return i;
+                  }
+                  return null;
+            })
+            .catch((error) => {
+                if (error.name === 'AbortError') {
+                return null;
+                }
+                console.error('Request failed:', error);
+               
+            });
+        }
+        
+        fetchPromises.push(fetchPromise);
+
+    }
+
+    
+    const results = await Promise.all(fetchPromises);
+
+    const validResults = results.filter(result => result !== null);
+
+    if (validResults.length > 0) {
+        console.log("First valid response:", validResults[0]);
+        const i = validResults[0];
+        runners[i]['available'] = false;
+        sockets.push(new WebSocket('ws://'+runnersJSON[i]['ip']+':3080'))
+        runDataObjects.push({
+            "runner-number": i,
+            "current-text": "",
+            "code": "",
+            "problem-number": parseInt(problemNumber),
+            "ip": runners[i]['ip']          
+        })
+        return sockets.length-1
+    } else {
+        console.log("No valid responses.");
+        return null;
+    }
+
+}
+
+async function doPreFlightChecks(){
+    const registeredRunners = JSON.parse(readFile(registeredRunnersPath));
+    const ips = [];
+    const newIps = [];
+    for(let i =0; i < registeredRunners.length; i++){
+        ips.push(registeredRunners[i]['ip']);
+    }
+    const fetchWithTimeout = (ip, timeout = 3000) => {
+        const url = 'http://'+ip+':3080/is-occupied'
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+      
+        return fetch(url, { signal: controller.signal })
+          .then(() => ip)
+          .catch(error => {
+           
+          })
+          .finally(() => clearTimeout(timeoutId));
+      };
+      
+      // Function to fetch all URLs and process the successful ones
+      
+        try {
+          const promises = ips.map(ip => fetchWithTimeout(ip));
+          const results = await Promise.all(promises);
+          results.forEach(ip => {
+            if(ip != undefined){
+                console.log("ip: " + ip);
+                runners.push({ip: ip, available: true});
+                newIps.push({ip: ip});
+            }
+            
+          });
+      
+        } catch (error) {
+          console.error('Error or timeout occurred:', error);
+        }
+
+        writeFile(registeredRunnersPath, JSON.stringify(newIps, null, 2));
+      
+}
+doPreFlightChecks();
+
+// async function checkIfOpen(i, problemNumber){
+//     try{
+//     if(i > activeRunners.length){
+//         console.log("There are no open runners");
+//         return -1;
+//     }
+//     if(activeRunners[i] === true){
+//         let response = await fetch('http://'+runnersJSON[i]['ip']+':3080/is-occupied')
+//         response = await response.text();
+//             console.log(response, " ", activeRunners[i]);
+//             if(response === 'false'){
+//                 if(activeRunners[i] === true){
+//                     
+//                 }else{
+//                     for(let j = 0; j < activeRunners.length; j++){
+//                         if(activeRunners[j] === true){
+//                             return checkIfOpen(j, problemNumber);
+//                         }
+//                     }
+//                     return false;
+//                 }
+//             }else{
+//                 for(let j = 0; j < activeRunners.length; j++){
+//                     if(activeRunners[j] === true){
+//                         return checkIfOpen(j, problemNumber);
+//                     }
+//                 }
+//                 return false;
+//             }
+        
+//     }else{
+//         for(let j = 0; j < activeRunners.length; j++){
+//             if(activeRunners[j] === true){
+//                 return checkIfOpen(j, problemNumber);
+//             }
+//         }
+//         return false;
+//     }
+// }catch(error){
+//     for(let j = 0; j < activeRunners.length; j++){
+//         if(activeRunners[j] === true){
+//             return checkIfOpen(j, problemNumber);
+//         }
+//     }
+//     return false;
+// }
+    
+// }
 
 
 

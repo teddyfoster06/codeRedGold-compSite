@@ -1,8 +1,58 @@
 [
     {
+        "problem-title": "Icy Roads in Haverford",
+        "boilerplate-python": "def countSlips(students, distance):\n\t# Write Python Here",
+        "boilerplate-java": "class Main {\n\tpublic static int countSlips(char[] students, double[] distance) {\n\t\t// Write Java Here\n\t}\n}",
+        "method-name": "countSlips",
+        "problem-value": 10,
+        "has-customPrinterFunction": true,
+        "customPrinterFunctions": {
+          "name": "printerFunction",
+          "python": "def printerFunction(n):\n\tprint(n)",
+          "java": "public static void printerFunction(int n){System.out.println(n);}"
+        },
+        "problem-description": "It snowed overnight and the roads are now icy, but, unfortunately, Haverford Township School District has decided that there will be no 2-hour delay today. Students come to school in three ways: walking, biking, and driving. Some students decided not to stand for this injustice and chose to skip school. Each student’s method of transportation is represented by one of four characters: ‘W’, ‘D’, ‘B’, or ‘S’. Each student leaves the house with 100 balance points, but if their slip points exceed their balance points, they will slip and fall.\n\nThe slip points are calculated as follows:\n- Walking = distance * 20\n- Driving = distance * 5\n- Biking = distance * 35\n- Skipped = distance * 0\n\nYou are given two arrays: `students` (a character array of methods of transport) and `distance` (a double array of distances). These arrays are parallel. Return the number of students whose slip points exceed 100.",
+        "inputs": [
+          {
+            "python": "students",
+            "java": "char[] students"
+          },
+          {
+            "python": "distance",
+            "java": "double[] distance"
+          }
+        ],
+        "testcases": [
+          {
+            "public": true,
+            "students": "{'W', 'B', 'D', 'D', 'W', 'W', 'S', 'W', 'B', 'W', 'B', 'D', 'D', 'B', 'W'}",
+            "distance": "{1.1, 3.4, 0.6, 0.1, 5.2, 2.9, 3.4, 2.1, 1.4, 2.3, 1.4, 2.8, 3.1, 0.4, 0.2}",
+            "output": "2\n"
+          },
+          {
+            "public": true,
+            "students": "{'B', 'B', 'W', 'W', 'W', 'W'}",
+            "distance": "{2.5, 2.9, 4.5, 5.0, 2.0, 1.0}",
+            "output": "2\n"
+          },
+          {
+            "public": false,
+            "students": "{'S', 'S', 'S', 'S'}",
+            "distance": "{10.0, 12.5, 15.0, 8.0}",
+            "output": "0\n"
+          },
+          {
+            "public": false,
+            "students": "{'D', 'D', 'D', 'D'}",
+            "distance": "{19.9, 19.8, 20.0, 20.1}",
+            "output": "1\n"
+          }
+        ]
+      },
+    {
        "problem-title":  "Tropical Storm Haverford",
        "boilerplate-python": "def numberOfCitiesHit(regions, n):\n\t#Write Python Here",
-       "boilerplate-java": "class Main{public static int numberOfCitiesHit(char[][] regions, int n){\n\t//Write Java Here\n}}",
+       "boilerplate-java": "class Main{\n\tpublic static int numberOfCitiesHit(char[][] regions, int n){\n\t\t//Write Java Here\n\t}\n}",
        "method-name": "numberOfCitiesHit",
        "problem-value": 20,
        "has-customPrinterFunction": true,
@@ -30,7 +80,22 @@
             "output": "27\n"
         },
         {
-            "public": false
+            "public": true,
+            "regions": "{{'S', 'L', 'L', 'H', 'L', 'H', 'L', 'H'}, {'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L'}, {'L', 'L', 'H', 'H', 'L', 'H', 'L', 'L'}, {'L', 'H', 'L', 'L', 'L', 'L', 'H', 'F'}, {'H', 'L', 'L', 'H', 'H', 'L', 'L', 'H'}, {'L', 'L', 'L', 'L', 'L', 'H', 'L', 'L'}, {'H', 'H', 'H', 'L', 'L', 'L', 'L', 'L'}, {'H', 'L', 'H', 'L', 'L', 'L', 'L', 'H'}}",
+            "n": "8",
+            "output": "11\n"
+        },
+        {
+            "public": false,
+            "regions": "{{'S', 'L', 'H', 'L', 'L', 'L', 'H', 'L', 'L', 'H'},{'L', 'L', 'L', 'H', 'L', 'H', 'L', 'H', 'L', 'L'},{'L', 'L', 'L', 'L', 'H', 'H', 'L', 'L', 'L', 'H'},{'L', 'H', 'L', 'H', 'H', 'L', 'H', 'L', 'L', 'L'},{'H', 'L', 'L', 'L', 'L', 'H', 'L', 'L', 'H', 'L'},{'H', 'H', 'L', 'L', 'L', 'H', 'L', 'L', 'L', 'H'},{'H', 'L', 'L', 'H', 'L', 'L', 'L', 'H', 'L', 'L'},{'L', 'H', 'L', 'L', 'L', 'H', 'L', 'H', 'H', 'F'},{'L', 'L', 'H', 'H', 'H', 'L', 'L', 'L', 'H', 'H'},{'S', 'L', 'L', 'H', 'H', 'H', 'L', 'L', 'L', 'H'}}",
+            "n": "10",
+            "output": "19\n"
+        },
+        {
+            "public": false,
+            "regions": "{{'S', 'L', 'L', 'L', 'H', 'H', 'L', 'L', 'H', 'L', 'L'}, {'H', 'L', 'H', 'L', 'L', 'H', 'H', 'L', 'H', 'L', 'H'}, {'H', 'L', 'L', 'H', 'L', 'L', 'L', 'L', 'L', 'L', 'H'}, {'L', 'L', 'L', 'L', 'H', 'H', 'L', 'L', 'L', 'L', 'L'}, {'H', 'H', 'L', 'L', 'L', 'L', 'H', 'H', 'L', 'L', 'H'}, {'L', 'L', 'H', 'L', 'L', 'H', 'L', 'H', 'L', 'H', 'F'}, {'H', 'L', 'L', 'L', 'L', 'H', 'L', 'H', 'H', 'H', 'L'}, {'H', 'L', 'L', 'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L'}, {'L', 'L', 'H', 'H', 'L', 'L', 'H', 'L', 'H', 'L', 'H'}, {'L', 'H', 'L', 'H', 'L', 'L', 'H', 'H', 'L', 'H', 'L'}, {'L', 'H', 'L', 'H', 'L', 'L', 'L', 'H', 'L', 'L', 'S'}}",
+            "n": "11",
+            "output": "20\n"
         }
        ]
     }

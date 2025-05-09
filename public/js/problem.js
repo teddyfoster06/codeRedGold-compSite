@@ -1,6 +1,6 @@
 // const ENDPOINT = '192.168.86.36'
 const ENDPOINT = 'localhost'
-const currentProblemNumber = 1;
+let currentProblemNumber = 2;
 
 const javaEditor = ace.edit("java-editor", {
   mode: "ace/mode/java", 
@@ -19,6 +19,9 @@ const sockets = []
 
 const testButtonRef = document.getElementById('testButton');
 const submitButtonRef = document.getElementById('submitButton');
+const descriptionTabButtonRef = document.getElementById("desc-tab-but");
+let lastSavedValuePython = "";
+let lastSavedValueJava = "";
 
 
 
@@ -31,21 +34,21 @@ let boilerplateJava = "";
 const cookies = getCookies();
 const saveButtonRef = document.getElementById('save-button');
 saveButtonRef.addEventListener('click', function(){
-  saveEditor();
+  saveEditor(currentProblemNumber, editor.getValue());
 });
 let timeoutID = 0;
 
 javaEditor.getSession().on('change', () => {
     clearTimeout(timeoutID);
     timeoutID = setTimeout(() => {
-      saveEditor();
-    }, 2000);
+      saveEditor(currentProblemNumber, editor.getValue());
+    }, 10000);
 })
 pythonEditor.getSession().on('change', () => {
     clearTimeout(timeoutID);
     timeoutID = setTimeout(() => {
-      saveEditor();
-    }, 2000);
+      saveEditor(currentProblemNumber, editor.getValue());
+    }, 10000);
 })
   
 
@@ -53,7 +56,7 @@ pythonEditor.getSession().on('change', () => {
 
 
 languageSelectorRef.addEventListener('change', () => {
-  saveEditor();
+  saveEditor(currentProblemNumber, editor.getValue());
   switch (languageSelectorRef.value) {
     case 'java':
       editor = javaEditor
@@ -99,6 +102,8 @@ document.querySelector('.tab-button.active').click();
 
 document.addEventListener('DOMContentLoaded', function() {
 
+  document.getElementById('page-loading').style.display = 'flex'
+
  
   const testcaseRequest = fetch('http://' + ENDPOINT + ':3000/testcases', {
     method: 'POST',
@@ -134,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
       editor.setValue(result, -1);
     })
     
-    
+    document.getElementById('page-loading').style.display = 'none'
 
   })
   .catch(error => {
@@ -205,7 +210,7 @@ function handleProblemsList(data){
     const list = data.list;
     let innerHTML = "";
     for(let i = 0; i < list.length; i++){
-      innerHTML += `<tr onclick="alert('Problem Clicked')" class="problem-list-row"><td><div class="problem-list-entry">#${list[i].number}- ${list[i].title} ● ${list[i].value} pts</div></td></tr>`
+      innerHTML += `<tr onclick="loadProblem(${i+1})" class="problem-list-row"><td><div class="problem-list-entry">#${list[i].number}- ${list[i].title} ● ${list[i].value} pts</div></td></tr>`
     }
     table.innerHTML = innerHTML;
   }
@@ -245,7 +250,8 @@ function handleEndtime(data){
 }
 
 async function getValue(language){
-  const cookies =getCookies();
+  const cookies = getCookies();
+  try{
   const response  = await fetch('http://' + ENDPOINT + ':3000/value-'+language, {
     method: 'POST',
     headers: {
@@ -258,26 +264,31 @@ async function getValue(language){
     })
   })
   const result = await response.json();
-  
+  console.log(result);
     if(result.success){
       return result.value;
     }else{
       alert("There was an error finding your account. Please log in again.");
     }
+}catch(error){
+  console.log(error);
+}
+  
   
 }
 
-async function saveEditor(){
+async function saveEditor(number, value){
+  console.log("Attempting to save editor with value: " +  value );
   fetch('http://' + ENDPOINT + ':3000/updateValue-'+currentLanguage, {
-    method: 'PUT',
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
         username: cookies[0],
         password: cookies[1],
-        problemNumber: currentProblemNumber,
-        newValue: editor.getValue()
+        problemNumber: number,
+        value: value
     })
 })
 .then(response => response.json())
@@ -288,6 +299,7 @@ async function saveEditor(){
 
 function testCode(code, language, problemNumber){
   const testObject = {
+    'type': 'test',
     'code': code,
     'language': language,
     'problemNumber':problemNumber,
@@ -299,28 +311,162 @@ function testCode(code, language, problemNumber){
 
   socket.onopen = () => {
     socket.send(JSON.stringify(testObject));
-    socket.onmessage = (event) => {
-      alert(event.data);
-      const response = JSON.parse(event.data);
-      logData(JSON.stringify(response));
-    }
+    
   }
-  
-
-  
+  socket.onclose = (event) => {
+    console.log('WebSocket closed', event);
+  };
+  socket.onmessage = (event) => {
+    console.log("Here is the message from the server");
+    console.log(event);
+    if(event.data === 'Done.'){
+      console.log("Were done")
+      fetch('http://' + ENDPOINT + ':3000/testcases', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: cookies[0],
+            password: cookies[1],
+            problemNumber: currentProblemNumber
+        })
+      })
+      .then(response => response.json())
+      .then(data =>{
+        console.log(data);
+        handleTestcases(data);
+        
+      })
+      fetch('http://' + ENDPOINT + ':3000/points').then(response => response.json()).then(data => {
+        handlePoints(data);
+      });
+    }
+    
+    // const response = JSON.parse(event.data);
+    // logData(JSON.stringify(response));
+  }
 }
 
 function submitCode(code, language, problemNumber){
+  const testObject = {
+    'type': 'submit',
+    'code': code,
+    'language': language,
+    'problemNumber':problemNumber,
+    'username': cookies[0],
+    'password': cookies[1]
+  }
+  //Set up websocket and send data
+  const socket = new WebSocket('ws://localhost:3001');
 
+  socket.onopen = () => {
+    socket.send(JSON.stringify(testObject));
+    
+  }
+  socket.onclose = (event) => {
+    console.log('WebSocket closed', event);
+  };
+  socket.onmessage = (event) => {
+    console.log("Here is the message from the server");
+    console.log(event);
+    if(event.data === 'Done.'){
+      console.log("Were done")
+      fetch('http://' + ENDPOINT + ':3000/testcases', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: cookies[0],
+            password: cookies[1],
+            problemNumber: currentProblemNumber
+        })
+      })
+      .then(response => response.json())
+      .then(data =>{
+        console.log(data);
+        handleTestcases(data);
+        
+      })
+      fetch('http://' + ENDPOINT + ':3000/points').then(response => response.json()).then(data => {
+        handlePoints(data);
+      });
+    }
+    
+    // const response = JSON.parse(event.data);
+    // logData(JSON.stringify(response));
+  }
 }
 
 testButtonRef.addEventListener('click', () => {
   testCode(editor.getValue(), languageSelectorRef.value, currentProblemNumber)
 })
 submitButtonRef.addEventListener('click', () => {
+  submitCode(editor.getValue(), languageSelectorRef.value, currentProblemNumber)
 
 })
 
 function loadProblem(number){
+  if(number !== currentProblemNumber){document.getElementById('page-loading').style.display = 'flex'
+  openTab({currentTarget:descriptionTabButtonRef}, 'description');
+  saveEditor(currentProblemNumber, editor.getValue());
+  currentProblemNumber = number;
+  const testcaseRequest = fetch('http://' + ENDPOINT + ':3000/testcases', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        username: cookies[0],
+        password: cookies[1],
+        problemNumber: currentProblemNumber
+    })
+  })
+  .then(response => response.json())
   
+  
+  const descriptionRequest = fetch('http://' + ENDPOINT + ':3000/problem-description?problemNumber=' + currentProblemNumber).then(response => response.json());
+  const problemsListRequest = fetch('http://' + ENDPOINT + ':3000/problems-list').then(response => response.json());
+  const endTimeRequest = fetch('http://' + ENDPOINT + ':3000/end-time').then(response => response.json());
+
+
+
+  Promise.all([testcaseRequest, descriptionRequest, problemsListRequest, endTimeRequest])
+  .then(results => {
+    const [testcases, description, problemsList, endTime] = results;
+    console.log("Here are the results");
+    console.log(testcases, description, problemsList);
+    handleTestcases(testcases);
+    handleProblemsList(problemsList);
+    handleProblemDescription(description);
+    handleEndtime(endTime)
+    getValue(languageSelectorRef.value).then(result =>{
+      document.getElementById('editor-loading').style.display = 'none'
+      editor.setValue(result, -1);
+    })
+    document.getElementById('page-loading').style.display = 'none'
+    
+
+  })
+  .catch(error => {
+    console.error('Error in one of the fetch requests:', error);
+  });}
+}
+
+
+// document.getElementById('rankingsButton').addEventListener('click', () => {
+//   const popup = document.getElementById('popup');
+//   const rankingFrame = document.getElementById('rankingFrame');
+//   popup.style.display = "block";
+
+// })
+
+document.getElementById('closeButton').addEventListener('click', () => {
+  const popup = document.getElementById('popup');
+  const rankingFrame = document.getElementById('rankingFrame');               
+  popup.style.display = "none";      
+});
+function handlePoints(data){
+  document.getElementById('points-div').innerHTML = data['points']
 }

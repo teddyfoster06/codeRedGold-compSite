@@ -1,0 +1,27 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 2rem;
+    background-color: #f4f4f4;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  ol {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    max-width: 400px;
+    margin: auto;
+  }
+  
+  li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  li:last-child {
+    border-bottom: none;
+  }
+  

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Team Rankings</title>
+  <link rel="stylesheet" href="rankings.css" />
+</head>
+<body>
+
+  <h1>Team Rankings</h1>
+  <ol id="ranking-list"></ol>
+
+  <script>
+    const teams = [
+      { name: "CodeRed", points: 23 },
+      { name: "ProgramBlue", points: 85 },
+      { name: "Teddih", points: 65 },
+    ];
+
+    teams.sort((a, b) => b.points - a.points);
+
+    const list = document.getElementById("ranking-list");
+
+    teams.forEach(team => {
+      const li = document.createElement("li");
+      li.textContent = `${team.name} — ${team.points} pts`;
+      list.appendChild(li);
+    });
+  </script>
+
+</body>
+</html>

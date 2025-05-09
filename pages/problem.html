@@ -19,14 +19,77 @@
 
 </head>
 <body class="bod">
+  <div class="loading-div" id="page-loading" style="width: 100%; height: 100%;">
+    <div class="loading-spinner" style="width: 50vh; height: 50vh;">
+    </div>
+  </div>
     <div id="top">
+      
+      <!-- <button id="rankingsButton">🏆Rankings🏆</button>
+      <div id="popup"> </head>
+        <body>
+        
+          <h1>Team Rankings</h1>
+          <ol id="ranking-list"></ol>
+        
+          <script>
+            const teams = [
+              { name: "CodeRed", points: 23 },
+              { name: "ProgramBlue", points: 85 },
+              { name: "Teddih", points: 65 },
+            ];
+        
+
+            let tableHTML = `
+        <table border="1" style="border-collapse: collapse; width: 100%;">
+            <tr>
+                <th>Name</th>
+                <th>Points</th>
+            </tr>`;
+    
+    teams.forEach(team => {
+        tableHTML += `
+            <tr>
+                <td>${team.name}</td>
+                <td>${team.points}</td>
+            </tr>`;
+    });
+
+    tableHTML += `</table>`;
+    
+    // Display the table inside the popup
+    popup.innerHTML = `
+        ${tableHTML}
+    `;
+
+
+            
+            teams.sort((a, b) => b.points - a.points);
+        
+            const list = document.getElementById("ranking-list");
+        
+            teams.forEach(team => {
+              const li = document.createElement("li");
+              li.textContent = `${team.name} — ${team.points} pts`;
+              list.appendChild(li);
+            });
+          </script>
+        
+        </body>
+        </html>
+        
+        <button id="closeButton">Close</button>
+        <iframe id="rankingFrame" src="" title="Rankings"></iframe>
+    </div> -->
+    <h1 id="points-div">Points: 0</h1>
+
         <h1 id="clock">00:00:00</h1>
     </div>
     <div id="bottom">
         <div id="bottom-left">
           <div class="window">
             <div class="tabs">
-              <button class="tab-button active" onclick="openTab(event, 'description')">Problem Description</button>
+              <button id="desc-tab-but" class="tab-button active" onclick="openTab(event, 'description')">Problem Description</button>
               <button class="tab-button" onclick="openTab(event, 'selection')">Problem Selection</button>
               <button class="tab-button" onclick="openTab(event, 'testcases-tab')">Test Cases</button>
             </div>
@@ -61,6 +124,9 @@
             
             <div class="tab-content" id="testcases-tab" style="display: none;">
               <div class="run-buttons">
+                <!-- <div class="loading-div" id="page-loading" style="width: 100%; height: 100%;">
+                  <div class="loading-spinner" style="width: 50%; height: 50%;">
+                  </div> -->
                 <button id="testButton" class="button test-button">
                   Test
                 </button>

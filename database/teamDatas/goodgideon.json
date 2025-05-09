@@ -1,7 +1,7 @@
 {
-  "username": "ineptdwarf33872",
-  "password": "fords",
-  "points": null,
+  "username": "goodgideon",
+  "password": "gideonisgod",
+  "points": 0,
   "problems": [
     {
       "completed": "false",
@@ -34,34 +34,32 @@
       ]
     },
     {
-      "completed": "true",
-      "time-completed": "2025-05-09T04:56:23.660Z",
-      "value-java": "import java.util.*;\nclass Main{\n\tpublic static int numberOfCitiesHit(char[][] regions, int n){\n   return 20;\n\t}\n}\n",
+      "completed": "false",
+      "time-completed": "00:00:00",
+      "value-java": "class Main{\n\tpublic static int numberOfCitiesHit(char[][] regions, int n){\n\t\t//Write Java Here\n\t}\n}",
       "value-python": "def numberOfCitiesHit(regions, n):\n\t#Write Python Here",
       "testcases": [
         {
           "public": true,
           "input": "regions={{'S', 'L', 'L', 'L', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'H', 'H', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'L', 'L', 'L', 'H', 'H', 'H', 'L', 'H', 'H'},{'H', 'L', 'H', 'L', 'L', 'L', 'H', 'L', 'L', 'H'},{'H', 'H', 'H', 'H', 'H', 'L', 'H', 'H', 'H', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'H'},{'H', 'H', 'H', 'L', 'H', 'H', 'H', 'H', 'L', 'H'},{'H', 'L', 'L', 'L', 'L', 'L', 'L', 'F', 'H', 'H'}}\nn=10",
           "expected-output": "27\n",
-          "your-output": "20\n",
+          "your-output": "",
           "status": "cross"
         },
         {
           "public": true,
           "input": "regions={{'S', 'L', 'L', 'H', 'L', 'H', 'L', 'H'}, {'H', 'L', 'L', 'L', 'L', 'L', 'L', 'L'}, {'L', 'L', 'H', 'H', 'L', 'H', 'L', 'L'}, {'L', 'H', 'L', 'L', 'L', 'L', 'H', 'F'}, {'H', 'L', 'L', 'H', 'H', 'L', 'L', 'H'}, {'L', 'L', 'L', 'L', 'L', 'H', 'L', 'L'}, {'H', 'H', 'H', 'L', 'L', 'L', 'L', 'L'}, {'H', 'L', 'H', 'L', 'L', 'L', 'L', 'H'}}\nn=8",
           "expected-output": "11\n",
-          "your-output": "20\n",
+          "your-output": "",
           "status": "cross"
         },
         {
           "public": false,
-          "status": "cross",
-          "your-output": "20\n"
+          "status": "cross"
         },
         {
           "public": false,
-          "status": "check",
-          "your-output": "20\n"
+          "status": "cross"
         }
       ]
     }
