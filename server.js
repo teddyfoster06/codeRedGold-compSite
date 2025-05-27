@@ -146,7 +146,7 @@ const teamDatasPath = path.join(__dirname, 'database', 'teamDatas');
 const problemsPath = path.join(__dirname, 'database', 'problems.json');
 const compInfoPath = path.join(__dirname, 'database', 'compInfo.json');
 const registeredRunnersPath = path.join(__dirname, 'database', 'registeredRunners.json');
-const problemsJSON = JSON.parse(readFile(problemsPath));
+let problemsJSON = JSON.parse(readFile(problemsPath));
 const compInfoJSON = JSON.parse(readFile(compInfoPath));
 
 const runners = [];
@@ -223,6 +223,7 @@ app.get('/end-time', (req, res) => {
 })
 
 app.get('/problem-description', (req, res) => {
+    problemsJSON = JSON.parse(readFile(problemsPath));
     const {problemNumber} = req.query;
     try{
         res.status(200).json({success: true, description: problemsJSON[problemNumber-1]['problem-description'], title: problemsJSON[problemNumber-1]['problem-title'], pointValue: problemsJSON[problemNumber-1]['problem-value'], number: parseInt(problemNumber), pythonBoilerplate: problemsJSON[problemNumber-1]['boilerplate-python'], javaBoilerplate: problemsJSON[problemNumber-1]['boilerplate-java']});
@@ -575,7 +576,7 @@ async function findOpenContainer(problemNumber){
         }else{
             const controller = new AbortController();
             controllers.push(controller);
-    
+            
             fetchPromise = fetch('http://'+runners[i]['ip']+':3080/is-occupied', { signal: controller.signal })
             .then(async (response) => {
                 const result = await response.text();
@@ -610,6 +611,7 @@ async function findOpenContainer(problemNumber){
         console.log("First valid response:", validResults[0]);
         const i = validResults[0];
         runners[i]['available'] = false;
+        console.log(i);
         pushToFirstEmptySlot(sockets, new WebSocket('ws://'+runnersJSON[i]['ip']+':3080'))
         const k = pushToFirstEmptySlot(runDataObjects, {
             "runner-number": i,

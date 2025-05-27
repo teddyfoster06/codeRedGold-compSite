@@ -1,0 +1,42 @@
+{
+    "problem-title":  "Ozone Layer Research",
+    "boilerplate-python": "def findDestructiveness(expulsionPattern):\n\t#Write Python Here",
+    "boilerplate-java": "class Main{\n\tpublic static int findDestructiveness(String expulsionPattern){\n\t\t//Write Java Here\n\t}\n}",
+    "method-name": "findDestructiveness",
+    "problem-value": 70,
+    "has-customPrinterFunction": true,
+    "customPrinterFunctions": {
+     "name":"printerFunction",
+     "python":"def printerFunction(n):\n\tprint(n)",
+     "java":"public static void printerFunction(int n){System.out.println(n);}"
+    },
+    "problem-description":"The expulsion of hydrofluorocarbons (HFCs) and chlorofluorocarbons (CFCs) work to destroy the earth’s ozone layer. The World Health Organization recently decided to create a program to track this destruction and enlisted you to help. Their data tracks the expulsion of these harmful chemicals as strings, with ‘H’ standing for HFCs, ‘C’ standing for CFCs, ‘O’ standing for ozone, and ‘D’ for other inert molecules. They want you to create a program that will return the total destructiveness based on a set of expulsion data.\nDestructive reactions will occur between HFCs/CFCs and Ozone molecules that decrease in destructiveness with distance. The formula for the destructiveness of a given HFC/CFC-Ozone reaction is 10 / (Distance between the molecules), with adjacent molecules having a distance of 1. For any given molecule, it will attempt to react with its closest neighbor first, but can only react with the molecule if it is also the closest neighbor of that molecule. Given equal distance, a molecule will prefer its closest leftward (towards 0-index of string) neighbor over its closest rightward one. When a pair of molecules react, they are both replaced by inert ‘D’ molecules. Molecules will continue reacting until there are either no HFCs/CFCs left in the string or no Ozone molecules left in the string.\nInput\nA String expulsionPattern representing the molecules in the air\nOutput\nAn integer representing the total destructiveness of all of the reactions\nExample 1\nInput:\nlog = \"HODDDOOHCCDODDDOD\"\nOutput:\n28\nExplanation:\nThe H at index 0 and the O at index 1 (highlighted red) are both each other’s closest neighbor and will bond, creating a destructiveness of 10/1 and two D’s in their place. \nHODDDOOHCCDODDDOD→DDDDDOOHCCDODDDOD\nTotal: 10\nThe O at index 6 and the H at index 7 (highlighted yellow) are both each other’s closest neighbor and will bond, creating a destructiveness of 10/1 and two D’s in their place.\nDDDDDOOHCCDODDDOD→DDDDDODDCCDODDDOD\nTotal: 20 \nThe O at index 5 and the C at index 8 (highlighted blue) are both each other’s closest neighbor and will bond, creating a destructiveness of 10/3 and two D’s in their place. The C’s closest neighbor is at index 5 instead of at index 11 because leftward neighbors take precedence. \nDDDDDODDCCDODDDOD→DDDDDDDDDCDODDDOD\nTotal 23.33\nThe C at index 9 and the O at index 11 (highlighted green) are both each other’s closest neighbor and will bond, creating a destructiveness of 10/2 and two D’s in their place. Before the first set of reactions (reactions 1 and 2), the O at index 6 was the C’s closest neighbor, however, the C was not the O’s closest neighbor and so they did not bond. Because the O and H at 6 and 7 are now D’s, the O at index 11 has become this C’s closest neighbor.\nDDDDDDDDDCDODDDOD→DDDDDDDDDDDDDDDOD\nTotal: 28.33\nThe string has no HFC/CFC molecules left, so we can take the total of 28.33, and return it, rounded to the nearest integer (28).",
+    "inputs":[
+         {
+             "python": "expulsionPattern",
+             "java": "String expulsionPattern"
+         }
+    ],
+    "testcases":[
+     {
+         "public": true,
+         "expulsionPattern": "HODDDOOHCCDODDDOD",
+         "output": "28\n"
+     },
+     {
+         "public": true,
+         "expulsionPattern": "DOCHHODDOCODDHO",
+         "output": "41\n"
+     },
+     {
+         "public": false,
+         "expulsionPattern": "HCOODDHHODCODDCH",
+         "output": "33\n"
+     },
+     {
+         "public": false,
+         "expulsionPattern": "ODDDHCOHCHD",
+         "output": "13\n"
+     }
+    ]
+ }

@@ -1,5 +1,6 @@
 // const ENDPOINT = '192.168.86.36'
-const ENDPOINT = '10.58.28.21'
+// const ENDPOINT = '10.58.28.21'
+const ENDPOINT = 'localhost';
 let currentProblemNumber = 2;
 
 const javaEditor = ace.edit("java-editor", {

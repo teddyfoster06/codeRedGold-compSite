@@ -1,10 +1,152 @@
 [
-    {
+  {
+    "problem-title": "Kelvin to Fahrenheit Conversion",
+    "boilerplate-python": "def kelvinToFahrenheit(kelvin):\n\t# Write Python Here",
+    "boilerplate-java": "class Main {\n\tpublic static int kelvinToFahrenheit(int kelvin) {\n\t\t// Write Java Here\n\t}\n}",
+    "method-name": "kelvinToFahrenheit",
+    "problem-value": 10,
+    "has-customPrinterFunction": true,
+    "customPrinterFunctions": {
+      "name": "printerFunction",
+      "python": "def printerFunction(n):\n\tprint(\"Fahrenheit =\", n)",
+      "java": "public static void printerFunction(int n){System.out.println(\"Fahrenheit = \" + n);}"
+    },
+    "problem-description": "The daily weather channel was sent the wrong data, they report the daily temperature in Fahrenheit, but it was mistakenly sent in Kelvin. Write a program that will take the Kelvin input and convert it into Fahrenheit.\nFahrenheit = (1.8*(K-273))+32.\nReturn the temperature in Fahrenheit as an integer.",
+    "inputs": [
+      {
+        "python": "kelvin",
+        "java": "int kelvin"
+      }
+    ],
+    "testcases": [
+      {
+        "public": true,
+        "kelvin": 10,
+        "output": "Fahrenheit = -441\n"
+      },
+      {
+        "public": true,
+        "kelvin": 300,
+        "output": "Fahrenheit = 81\n"
+      },
+      {
+        "public": false,
+        "kelvin": 273,
+        "output": "Fahrenheit = 32\n"
+      },
+      {
+        "public": false,
+        "kelvin": 0,
+        "output": "Fahrenheit = -459\n"
+      }
+    ]
+  },
+  {
+    "problem-title": "Weather Balloon",
+    "boilerplate-python": "def balloonDistance(x, y):\n\t# Write Python Here",
+    "boilerplate-java": "class Main {\n\tpublic static double balloonDistance(int x, int y) {\n\t\t// Write Java Here\n\t}\n}",
+    "method-name": "balloonDistance",
+    "problem-value": 20,
+    "has-customPrinterFunction": true,
+    "customPrinterFunctions": {
+      "name": "printerFunction",
+      "python": "def printerFunction(d):\n\tprint(round(d, 1))",
+      "java": "public static void printerFunction(double d){System.out.printf(\"%.1f\\n\", d);}"
+    },
+    "problem-description": "During a thunderstorm, a weather balloon is released from the ground and rises vertically to a height of Y meters. At the same time, strong winds push it horizontally so that it drifts X meters away from its original launching point. To calculate important information about the storm, the weather station needs to know the distance from the weather balloons launch point to its current position.\n\nTotal distance = sqrt(x² + y²)\n\nYou are given two integers: Y (the vertical height) and X (the horizontal distance). Return the total distance from the balloons starting point to its current position, rounded to 1 decimal place.",
+    "inputs": [
+      {
+        "python": "x",
+        "java": "int x"
+      },
+      {
+        "python": "y",
+        "java": "int y"
+      }
+    ],
+    "testcases": [
+      {
+        "public": true,
+        "x": 3,
+        "y": 5,
+        "output": "5.8\n"
+      },
+      {
+        "public": true,
+        "x": 6,
+        "y": 8,
+        "output": "10.0\n"
+      },
+      {
+        "public": false,
+        "x": 0,
+        "y": 0,
+        "output": "0.0\n"
+      },
+      {
+        "public": false,
+        "x": 1,
+        "y": 1,
+        "output": "1.4\n"
+      }
+    ]
+  },
+  {
+    "problem-title": "Leaky Lagoons",
+    "boilerplate-python": "def findFloodRisks(waterLevels, threshold):\n\t# Write Python Here",
+    "boilerplate-java": "class Main {\n\tpublic static int[] findFloodRisks(int[] waterLevels, int threshold) {\n\t\t// Write Java Here\n\t}\n}",
+    "method-name": "findFloodRisks",
+    "problem-value": 30,
+    "has-customPrinterFunction": true,
+    "customPrinterFunctions": {
+      "name": "printerFunction",
+      "python": "def printerFunction(lst):\n\tprint('[' + ', '.join(str(x) for x in lst) + ']')",
+      "java": "public static void printerFunction(int[] lst){\n\tSystem.out.print(\"[\");\n\tfor(int i = 0; i < lst.length; i++){\n\t\tSystem.out.print(lst[i]);\n\t\tif(i != lst.length - 1) System.out.print(\", \");\n\t}\n\tSystem.out.println(\"]\");\n}"
+    },
+    "problem-description": "Massive rain storms have been causing the local lagoon to overflow, so scientists have begun tracking the water level to identify which areas are flood risks. You are given an array of water levels. An area is considered a flood risk if its water level is greater than or equal to the given threshold.\n\nReturn an array of the indexes where the water level meets or exceeds the threshold.",
+    "inputs": [
+      {
+        "python": "waterLevels",
+        "java": "int[] waterLevels"
+      },
+      {
+        "python": "threshold",
+        "java": "int threshold"
+      }
+    ],
+    "testcases": [
+      {
+        "public": true,
+        "waterLevels": "[3, 8, 12, 5, 15, 9, 10, 11]",
+        "threshold": 9,
+        "output": "[2, 4, 5, 6, 7]\n"
+      },
+      {
+        "public": true,
+        "waterLevels": "[2, 5, 9, 13, 6, 7]",
+        "threshold": 7,
+        "output": "[2, 3, 5]\n"
+      },
+      {
+        "public": false,
+        "waterLevels": "[10, 20, 30, 40]",
+        "threshold": 25,
+        "output": "[2, 3]\n"
+      },
+      {
+        "public": false,
+        "waterLevels": "[1, 2, 3]",
+        "threshold": 5,
+        "output": "[]\n"
+      }
+    ]
+  },  
+  {
         "problem-title": "Icy Roads in Haverford",
         "boilerplate-python": "def countSlips(students, distance):\n\t# Write Python Here",
         "boilerplate-java": "class Main {\n\tpublic static int countSlips(char[] students, double[] distance) {\n\t\t// Write Java Here\n\t}\n}",
         "method-name": "countSlips",
-        "problem-value": 10,
+        "problem-value": 40,
         "has-customPrinterFunction": true,
         "customPrinterFunctions": {
           "name": "printerFunction",
@@ -49,12 +191,260 @@
           }
         ]
       },
+      {
+        "problem-title": "Tornado Chase",
+        "boilerplate-python": "def canEscapeTornado(speeds, X):\n\t# Write Python Here",
+        "boilerplate-java": "class Main {\n\tpublic static boolean canEscapeTornado(int[] speeds, int X) {\n\t\t// Write Java Here\n\t}\n}",
+        "method-name": "canEscapeTornado",
+        "problem-value": 50,
+        "has-customPrinterFunction": true,
+        "customPrinterFunctions": {
+          "name": "printerFunction",
+          "python": "def printerFunction(result):\n\tprint(result)",
+          "java": "public static void printerFunction(boolean result){System.out.println(result);}"
+        },
+        "problem-description": "There is news of a tornado coming into town, and you decide to outrun it with your car. The tornado hates Toyota Prii (Priuses) and follows you at a constant speed X miles per hour.\n\nYou are given an array of integers representing the Prius’s speed over consecutive 10-minute intervals. Each speed value is the constant speed during that interval.\n\nDetermine if the Prius escapes the tornado by checking if at every 10-minute interval, the total distance traveled by the Prius is strictly greater than the tornado’s total distance traveled (at speed X mph). The tornado stops chasing after the last interval.\n\nReturn true if the Prius escapes, otherwise false.",
+        "inputs": [
+          {
+            "python": "speeds",
+            "java": "int[] speeds"
+          },
+          {
+            "python": "X",
+            "java": "int X"
+          }
+        ],
+        "testcases": [
+          {
+            "public": true,
+            "speeds": "[20, 25, 30, 35, 40, 45, 50]",
+            "X": 30,
+            "output": "false\n"
+          },
+          {
+            "public": true,
+            "speeds": "[30, 35, 40, 20, 30]",
+            "X": 25,
+            "output": "true\n"
+          },
+          {
+            "public": false,
+            "speeds": "[35, 40, 45, 50]",
+            "X": 34,
+            "output": "true\n"
+          },
+          {
+            "public": false,
+            "speeds": "[25, 20, 30, 35]",
+            "X": 26,
+            "output": "false\n"
+          },
+          {
+            "public": false,
+            "speeds": "[28, 28, 28, 28]",
+            "X": 28,
+            "output": "false\n"
+          }
+        ]
+      },
+      {
+        "problem-title": "Wind Storm",
+        "boilerplate-python": "def countDamagedBuildings(buildings, direction):\n\t# Write Python Here",
+        "boilerplate-java": "class Main {\n\tpublic static int countDamagedBuildings(int[] buildings, String direction) {\n\t\t// Write Java Here\n\t}\n}",
+        "method-name": "countDamagedBuildings",
+        "problem-value": 60,
+        "has-customPrinterFunction": true,
+        "customPrinterFunctions": {
+          "name": "printerFunction",
+          "python": "def printerFunction(result):\n\tprint(result)",
+          "java": "public static void printerFunction(int result){System.out.println(result);}"
+        },
+        "problem-description": "A windstorm is sweeping through the city and damaging buildings as it comes through. The storm damages a building only if it is taller than all the buildings in front of it (relative to the wind's direction).\n\nYou are given an integer array representing the heights of buildings from left to right and a string direction indicating whether the wind is coming from the \"left\" or \"right\".\n\nCalculate how many buildings are damaged by the windstorm.",
+        "inputs": [
+          {
+            "python": "buildings",
+            "java": "int[] buildings"
+          },
+          {
+            "python": "direction",
+            "java": "String direction"
+          }
+        ],
+        "testcases": [
+          {
+            "public": true,
+            "buildings": "{6, 3, 5, 9, 8, 10, 7, 12, 2, 11, 14, 9, 3, 2, 4, 9}",
+            "direction": "\"right\"",
+            "output": "5\n"
+          },
+          {
+            "public": true,
+            "buildings": "{1, 2, 3, 2, 5, 4}",
+            "direction": "\"right\"",
+            "output": "4\n"
+          },
+          {
+            "public": false,
+            "buildings": "{10, 9, 8, 7, 6}",
+            "direction": "\"left\"",
+            "output": "5\n"
+          },
+          {
+            "public": false,
+            "buildings": "{3, 1, 4, 1, 5, 9}",
+            "direction": "\"left\"",
+            "output": "1\n"
+          }
+        ]
+      },
+      {
+        "problem-title":  "Ozone Layer Research",
+        "boilerplate-python": "def findDestructiveness(expulsionPattern):\n\t#Write Python Here",
+        "boilerplate-java": "class Main{\n\tpublic static int findDestructiveness(String expulsionPattern){\n\t\t//Write Java Here\n\t}\n}",
+        "method-name": "findDestructiveness",
+        "problem-value": 70,
+        "has-customPrinterFunction": true,
+        "customPrinterFunctions": {
+         "name":"printerFunction",
+         "python":"def printerFunction(n):\n\tprint(n)",
+         "java":"public static void printerFunction(int n){System.out.println(n);}"
+        },
+        "problem-description":"The expulsion of hydrofluorocarbons (HFCs) and chlorofluorocarbons (CFCs) work to destroy the earth’s ozone layer. The World Health Organization recently decided to create a program to track this destruction and enlisted you to help. Their data tracks the expulsion of these harmful chemicals as strings, with ‘H’ standing for HFCs, ‘C’ standing for CFCs, ‘O’ standing for ozone, and ‘D’ for other inert molecules. They want you to create a program that will return the total destructiveness based on a set of expulsion data.\nDestructive reactions will occur between HFCs/CFCs and Ozone molecules that decrease in destructiveness with distance. The formula for the destructiveness of a given HFC/CFC-Ozone reaction is 10 / (Distance between the molecules), with adjacent molecules having a distance of 1. For any given molecule, it will attempt to react with its closest neighbor first, but can only react with the molecule if it is also the closest neighbor of that molecule. Given equal distance, a molecule will prefer its closest leftward (towards 0-index of string) neighbor over its closest rightward one. When a pair of molecules react, they are both replaced by inert ‘D’ molecules. Molecules will continue reacting until there are either no HFCs/CFCs left in the string or no Ozone molecules left in the string.\nInput\nA String expulsionPattern representing the molecules in the air\nOutput\nAn integer representing the total destructiveness of all of the reactions\nExample 1\nInput:\nlog = \"HODDDOOHCCDODDDOD\"\nOutput:\n28\nExplanation:\nThe H at index 0 and the O at index 1 (highlighted red) are both each other’s closest neighbor and will bond, creating a destructiveness of 10/1 and two D’s in their place. \nHODDDOOHCCDODDDOD→DDDDDOOHCCDODDDOD\nTotal: 10\nThe O at index 6 and the H at index 7 (highlighted yellow) are both each other’s closest neighbor and will bond, creating a destructiveness of 10/1 and two D’s in their place.\nDDDDDOOHCCDODDDOD→DDDDDODDCCDODDDOD\nTotal: 20 \nThe O at index 5 and the C at index 8 (highlighted blue) are both each other’s closest neighbor and will bond, creating a destructiveness of 10/3 and two D’s in their place. The C’s closest neighbor is at index 5 instead of at index 11 because leftward neighbors take precedence. \nDDDDDODDCCDODDDOD→DDDDDDDDDCDODDDOD\nTotal 23.33\nThe C at index 9 and the O at index 11 (highlighted green) are both each other’s closest neighbor and will bond, creating a destructiveness of 10/2 and two D’s in their place. Before the first set of reactions (reactions 1 and 2), the O at index 6 was the C’s closest neighbor, however, the C was not the O’s closest neighbor and so they did not bond. Because the O and H at 6 and 7 are now D’s, the O at index 11 has become this C’s closest neighbor.\nDDDDDDDDDCDODDDOD→DDDDDDDDDDDDDDDOD\nTotal: 28.33\nThe string has no HFC/CFC molecules left, so we can take the total of 28.33, and return it, rounded to the nearest integer (28).",
+        "inputs":[
+             {
+                 "python": "expulsionPattern",
+                 "java": "String expulsionPattern"
+             }
+        ],
+        "testcases":[
+         {
+             "public": true,
+             "expulsionPattern": "HODDDOOHCCDODDDOD",
+             "output": "28\n"
+         },
+         {
+             "public": true,
+             "expulsionPattern": "DOCHHODDOCODDHO",
+             "output": "41\n"
+         },
+         {
+             "public": false,
+             "expulsionPattern": "HCOODDHHODCODDCH",
+             "output": "33\n"
+         },
+         {
+             "public": false,
+             "expulsionPattern": "ODDDHCOHCHD",
+             "output": "13\n"
+         }
+        ]
+     },
+      {
+        "problem-title":  "Weather App Reformatting",
+        "boilerplate-python": "def reformatWeatherApp(words, lineLength, alignment):\n\t#Write Python Here",
+        "boilerplate-java": "class Main{\n\tpublic static String[] reformatWeatherApp(String[] words, int lineLength, char alignment){\n\t\t//Write Java Here\n\t}\n}",
+        "method-name": "reformatWeatherApp",
+        "problem-value": 80,
+        "has-customPrinterFunction": true,
+        "customPrinterFunctions": {
+         "name":"printerFunction",
+         "python":"def printerFunction(n):\n\tprint(n)",
+         "java":"public static void printerFunction(String[] arr){System.out.print(\"[\");for (int i = 0; i < arr.length; i++) {System.out.print(\"'\" + arr[i] + \"'\");if (i < arr.length - 1) {System.out.print(\", \");}}System.out.println(\"]\");}"
+        },
+        "problem-description": "Following the recent series of natural disasters, the Apple Weather App made a ton of money and is spending to improve its formatting and add new customization to its display. You will be tasked with formatting a string into multiple lines and adding the proper whitespace to do so. Your code must take a string array words, an integer lineLength, and a character alignment and return an array of lines, each being a string with proper whitespace. The character will either be ‘L’, representing left alignment, ‘R’, representing right alignment, or ‘C’ representing center alignment. The integer will represent the character length of each line. Every line should have a character length of exactly lineLength. For center alignment, if an odd number of spaces is required to reach the line length, place the extra space on the left side of the page. If a word fits any less than fully on a given line, it must be put on the following line. Every word should have a space between itself and the following word on the same line. This means that every word except for the last word on each line should be followed by a space.\nInput A String array words populated with every word that needs to be in the newly formatted text An integer lineLength that represents the number of characters that must be on each line A character alignment that will either be an ‘R’, an ‘L’, or a ‘C’, representing right align, left align, and center align, respectively.\nOutput A String array , where each string is a line in the correctly formatted text.\nExample 1 Input: words = [\"Today’s\", \"forecast\", \"is\", \"set\", \"to\", \"be\", \"mild\", \"with\", \"partly\", \"cloudy\", \"skies\", \"and\", \"occasional\", \"bursts\", \"of\", \"sunshine.\", \"Temperatures\", \"will\", \"hover\", \"in\", \"the\", \"mid-70s,\", \"providing\", \"comfortable\", \"conditions\", \"for\", \"outdoor\", \"activities.\", \"Light\", \"winds\", \"from\", \"the\", \"northeast\", \"will\", \"offer\", \"a\", \"refreshing\", \"breeze\", \"throughout\", \"the\", \"day.\", \"There\", \"is\", \"a\", \"slight\", \"chance\", \"of\", \"a\", \"brief\", \"shower\", \"later\", \"in\", \"the\", \"afternoon,\", \"but\", \"it\", \"is\", \"expected\", \"to\", \"clear\", \"up\", \"quickly.\", \"Humidity\", \"levels\", \"should\", \"remain\", \"moderate,\", \"contributing\", \"to\", \"an\", \"overall\", \"pleasant\", \"atmosphere.\", \"Overall,\", \"it\", \"looks\", \"like\", \"a\", \"day\", \"that\", \"invites\", \"outdoor\", \"enjoyment\", \"with\", \"just\", \"a\", \"few\", \"minor\", \"weather\", \"shifts.\"] lineLength = 40 alignment = ‘C’\nOutput (Spaces replaced with 〿 for visibility): [\"〿Today’s forecast is set to be mild with\", \"〿〿〿partly cloudy skies and occasional〿〿〿\", \"〿〿bursts of sunshine. Temperatures will〿\", \"〿〿〿〿〿hover in the mid-70s, providing〿〿〿〿\", \"〿〿〿comfortable conditions for outdoor〿〿〿\", \"〿〿〿〿activities. Light winds from the〿〿〿〿\", \"northeast will offer a refreshing breeze\", \"〿〿throughout the day. There is a slight〿\", \"〿〿chance of a brief shower later in the〿\", \"〿afternoon, but it is expected to clear〿\", \"〿〿〿up quickly. Humidity levels should〿〿〿\", \"〿〿〿remain moderate, contributing to an〿〿\", \"overall pleasant atmosphere. Overall, it\", \"〿〿looks like a day that invites outdoor〿\", \"〿enjoyment with just a few minor weather\", \"〿〿〿〿〿〿〿〿〿〿〿〿〿〿〿〿〿shifts.〿〿〿〿〿〿〿〿〿〿〿〿〿〿〿〿\"]\nExplanation: Spaces are added to each line, with an equal number of spaces on each side because the alignment is ‘C’, meaning centered. For example, on the first line, \"Today’s forecast is set to be mild with\" is 39 characters long. Because this is 1 less than 40, 1 space needs to be added to the line. An equal number of spaces should be added on both sides, however, because there is only 1 space and the left side takes precedence over the right, place the 1 extra space on the right side.",
+        "inputs":[
+             {
+                 "python": "words",
+                 "java": "String[] words"
+             },
+             {
+                 "python": "lineLength",
+                 "java": "int lineLength"
+             },
+             {
+                 "python": "alignment",
+                 "java": "char alignment"
+             }
+        ],
+        "testcases":[
+         {
+             "public": true,
+             "words": "{\"Today’s\", \"forecast\", \"is\", \"set\", \"to\", \"be\", \"mild\", \"with\", \"partly\", \"cloudy\", \"skies\", \"and\", \"occasional\", \"bursts\", \"of\", \"sunshine.\", \"Temperatures\", \"will\", \"hover\", \"in\", \"the\", \"mid-70s,\", \"providing\", \"comfortable\", \"conditions\", \"for\", \"outdoor\", \"activities.\", \"Light\", \"winds\", \"from\", \"the\", \"northeast\", \"will\", \"offer\", \"a\", \"refreshing\", \"breeze\", \"throughout\", \"the\", \"day.\", \"There\", \"is\", \"a\", \"slight\", \"chance\", \"of\", \"a\", \"brief\", \"shower\", \"later\", \"in\", \"the\", \"afternoon,\", \"but\", \"it\", \"is\", \"expected\", \"to\", \"clear\", \"up\", \"quickly.\", \"Humidity\", \"levels\", \"should\", \"remain\", \"moderate,\", \"contributing\", \"to\", \"an\", \"overall\", \"pleasant\", \"atmosphere.\", \"Overall,\", \"it\", \"looks\", \"like\", \"a\", \"day\", \"that\", \"invites\", \"outdoor\", \"enjoyment\", \"with\", \"just\", \"a\", \"few\", \"minor\", \"weather\", \"shifts.\"}",
+             "lineLength": "40",
+             "alignment": "'C'",
+             "output": "[' Today’s forecast is set to be mild with ', '   partly cloudy skies and occasional    ', '  bursts of sunshine. Temperatures will  ', '     hover in the mid-70s, providing     ', '   comfortable conditions for outdoor    ', '    activities. Light winds from the     ', 'northeast will offer a refreshing breeze ', '  throughout the day. There is a slight  ', '  chance of a brief shower later in the  ', ' afternoon, but it is expected to clear  ', '   up quickly. Humidity levels should    ', '   remain moderate, contributing to an   ', 'overall pleasant atmosphere. Overall, it ', '  looks like a day that invites outdoor  ', ' enjoyment with just a few minor weather ',  '                 shifts.                 ']\n"
+         },
+         {
+             "public": true,
+             "words": "{\"Snowfall\", \"is\", \"forecasted\", \"for\", \"the\", \"mountain\", \"regions\", \"starting\", \"late\", \"tonight.\", \"Travel\", \"may\", \"be\", \"impacted\", \"due\", \"to\", \"icy\", \"roads.\"}",
+             "lineLength": "45",
+             "alignment": "'L'",
+             "output": "['Snowfall is forecasted for the mountain      ', 'regions starting late tonight. Travel may be ', 'impacted due to icy roads.                   ']\n"
+         },
+         {
+            "public": false,
+            "words": "{\"Expect\", \"humid\", \"conditions\", \"with\", \"scattered\", \"thunderstorms\", \"throughout\", \"the\", \"day.\", \"Lightning\", \"and\", \"heavy\", \"rain\", \"are\", \"possible.\"}",
+            "lineLength": "40",
+            "alignment": "'C'",
+            "output": "[' Expect humid conditions with scattered ', '    thunderstorms throughout the day.   ', ' Lightning and heavy rain are possible. ']\n"
+        },
+        {
+            "public": false,
+            "words": "{\"A\", \"cold\", \"front\", \"is\", \"moving\", \"in\", \"this\", \"evening\", \"bringing\", \"strong\", \"winds\", \"and\", \"showers.\", \"Temperatures\", \"will\", \"drop\", \"significantly\", \"overnight.\"}",
+            "lineLength": "50",
+            "alignment": "'R'",
+            "output": "['   A cold front is moving in this evening bringing', '  strong winds and showers. Temperatures will drop', '                          significantly overnight.']\n"
+        }
+        ]
+     },
+     {
+      "problem-title":  "Electricity Shortage",
+      "boilerplate-python": "def sortRecords(students):\n\t#Write Python Here",
+      "boilerplate-java": "class Main{\n\tpublic static int sortRecords(String[] students){\n\t\t//Write Java Here\n\t}\n}",
+      "method-name": "sortRecords",
+      "problem-value": 90,
+      "has-customPrinterFunction": true,
+      "customPrinterFunctions": {
+       "name":"printerFunction",
+       "python":"def printerFunction(n):\n\tprint(n)",
+       "java":"public static void printerFunction(int n){System.out.println(n);}"
+      },
+      "problem-description":"Following a massive earthquake, the local school district has lost power and is now relying on a generator for its electricity, but fuel is running low. To keep track of the students, administrators need an alphabetically ordered list of all of the student names. Sadly, all of its student records are scrambled up in the blockchain, and require a lot of energy to change. To conserve energy, the only operation you may use to reorganize the records is a swap operation, which switches the positions of two student records (Ex. [\"Z\", \"B\", \"C\", \"D\"]→Swap(0, 4)→[\"D\", \"B\", \"C\", \"Z\"]).\n\nWrite a program that will return the minimum number of swaps required to put the records back in alphabetical order. There will be no capital letters or non-letter characters (Numbers, apostrophes, etc.). If two words have the same first letter, move to the second. If they share a second letter, move to the third. Continue this process until there is a difference between the words. If there are no other differences, the shorter word should come first.\n\nAlphabetical Order:\n- \"apple\" comes before \"orange\" because \"a\" is before \"o\" alphabetically\n- \"run\" comes before \"rut\" because \"r\" and \"u\" match, but \"n\" is before \"t\" alphabetically\n- \"run\" comes before \"runner\" because \"r\", \"u\", and \"n\" match, but \"run\" is shorter\n\nInput:\nA string array `students` of lowercase strings ([a-z] only) representing the scrambled list of student names\n\nOutput:\nAn integer representing the minimum number of swaps to organize the array in alphabetical order\n\nExample 1:\nInput: students = [\"charlie\", \"carlos\", \"teddy\", \"gideon\", \"carlo\", \"sean\", \"logan\", \"kevin\", \"jonathan\", \"ryan\", \"aidan\"]\nOutput: 8\n\nExplanation:\nSwap \"charlie\" and \"gideon\" → [\"gideon\", \"carlos\", \"teddy\", \"charlie\", \"carlo\", \"sean\", \"logan\", \"kevin\", \"jonathan\", \"ryan\", \"aidan\"]\nSwap \"gideon\" and \"carlo\" → [\"carlo\", \"carlos\", \"teddy\", \"charlie\", \"gideon\", \"sean\", \"logan\", \"kevin\", \"jonathan\", \"ryan\", \"aidan\"]\nSwap \"carlo\" and \"carlos\" → [\"carlos\", \"carlo\", \"teddy\", \"charlie\", \"gideon\", \"sean\", \"logan\", \"kevin\", \"jonathan\", \"ryan\", \"aidan\"]\nSwap \"carlos\" and \"teddy\" → [\"teddy\", \"carlo\", \"carlos\", \"charlie\", \"gideon\", \"sean\", \"logan\", \"kevin\", \"jonathan\", \"ryan\", \"aidan\"]\nSwap \"teddy\" and \"aidan\" → [\"aidan\", \"carlo\", \"carlos\", \"charlie\", \"gideon\", \"sean\", \"logan\", \"kevin\", \"jonathan\", \"ryan\", \"teddy\"]\nSwap \"sean\" and \"ryan\" → [\"aidan\", \"carlo\", \"carlos\", \"charlie\", \"gideon\", \"ryan\", \"logan\", \"kevin\", \"jonathan\", \"sean\", \"teddy\"]\nSwap \"ryan\" and \"jonathan\" → [\"aidan\", \"carlo\", \"carlos\", \"charlie\", \"gideon\", \"jonathan\", \"logan\", \"kevin\", \"ryan\", \"sean\", \"teddy\"]\nSwap \"logan\" and \"kevin\" → [\"aidan\", \"carlo\", \"carlos\", \"charlie\", \"gideon\", \"jonathan\", \"kevin\", \"logan\", \"ryan\", \"sean\", \"teddy\"]",
+      "inputs":[
+           {
+               "python": "students",
+               "java": "String[] students"
+           }
+      ],
+      "testcases":[
+       {
+           "public": true,
+           "students": "{\"charlie\", \"carlos\", \"teddy\", \"gideon\", \"carlo\", \"sean\", \"logan\", \"kevin\", \"jonathan\", \"ryan\", \"aidan\"}",
+           "output": "8\n"
+       },
+       {
+           "public": true,
+           "students": "{\"nathan\", \"owen\", \"tyler\", \"julian\", \"dylan\", \"jacob\", \"luke\", \"mason\", \"brady\", \"liam\", \"ethan\"}",
+           "output": "6\n"
+       },
+       {
+           "public": false,
+           "students": "{\"noah\", \"jackson\", \"caleb\", \"leo\", \"xavier\", \"jordan\", \"henry\", \"isaac\", \"eli\", \"connor\", \"asher\"}",
+           "output": "8\n"
+       },
+       {
+           "public": false,
+           "students": "{\"ryder\", \"kieran\", \"theo\", \"julien\", \"remy\", \"emmett\", \"bennett\", \"ronan\", \"lucas\", \"matteo\", \"zane\", \"hayden\", \"elijah\", \"niko\", \"samuel\"}",
+           "output": "14\n"
+       }
+      ]
+   },
     {
        "problem-title":  "Tropical Storm Haverford",
        "boilerplate-python": "def numberOfCitiesHit(regions, n):\n\t#Write Python Here",
        "boilerplate-java": "class Main{\n\tpublic static int numberOfCitiesHit(char[][] regions, int n){\n\t\t//Write Java Here\n\t}\n}",
        "method-name": "numberOfCitiesHit",
-       "problem-value": 20,
+       "problem-value": 100,
        "has-customPrinterFunction": true,
        "customPrinterFunctions": {
         "name":"printerFunction",
